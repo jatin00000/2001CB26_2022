@@ -122,6 +122,23 @@ def octact_identification(mod=5000):
     list_value.pop(0)
     list_value.insert(0, -1.0000)
 
+    #Again making a dictionary, that will have for each octant all the intervals in form of list
+    #Example {'1':[[0,5000,0], [5001,10000,0], .....], '-1':[[0,5000,0], [5001,10000,0], .....], ..........}
+    #        'octant_value' : [[start_index, end_index, count of value]]
+    list_final = {'1':[], '-1':[], '2':[], '-2':[], '3':[], '-3':[], '4':[], '-4':[]}
+    for i in range(len(list_value)-1):
+        for j in list_final:
+            list_final[j].append([list_value[i]+1,list_value[i+1],0])
+
+    #7 For each mod range of each octant, count number of octant in it
+    for index, rows in file2.iterrows():
+        for i in list_final[str(file2['Octant'][index])]:
+            if index>=i[0] and index<=i[1]:
+                #if lies in this interval, increment the count
+                i[2]+=1
+                #we don't need to look furthur
+                break
+
     
     file2.to_csv("octant_output.csv", index=False)
 
