@@ -139,7 +139,21 @@ def octact_identification(mod=5000):
                 #we don't need to look furthur
                 break
 
-    
+    #8 Adding mod range labels in octant_output.csv file
+    for index in range(len(list_value)-1):
+        #index+2 as they will start to fill from 2nd row in Octant ID column
+        #will insert the range as an string
+        if(list_final['1'][index][0]==0.0):
+            file2['Octant ID'][index+2]='0.0000'+'-'+str(list_final['1'][index][1])
+        else :
+            file2['Octant ID'][index+2]=str(list_final['1'][index][0])+'-'+str(list_final['1'][index][1])
+
+    #9 Filling count of each octant in each mod range into csv file
+    for key, value in list_final.items(): #iterating through dictionary
+        for i in range(len(list_value)-1): #number of ranges of mod will be constant
+            file2[str(key)][i+2]=str(list_final[key][i][2])
+            #<file_handler>['<column_for_octant>'][row number] = string of list_final[key is octant][serial number of mod range][count of values]
+    #10 Saving all changes to output file
     file2.to_csv("octant_output.csv", index=False)
 
 ###Code
