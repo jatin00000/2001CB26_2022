@@ -73,11 +73,43 @@ def octact_identification(mod=5000):
     file2.insert(len(file2.columns), 'V\'=V - V avg', '')
     file2.insert(len(file2.columns), 'W\'=W - W avg', '')
     file2.insert(len(file2.columns), 'Octant', '')
+    _hash = {'1':0, '-1':0, '2':0, '-2':0, '3':0, '-3':0, '4':0, '-4':0}
     for index, rows in file2.iterrows():
         file2['U\'=U - U avg'][index]=float(file2['U'][index])-temp1
         file2['V\'=V - V avg'][index]=float(file2['V'][index])-temp2
         file2['W\'=W - W avg'][index]=float(file2['W'][index])-temp3
         file2['Octant'][index]=octant(float(file2['U\'=U - U avg'][index]), float(file2['V\'=V - V avg'][index]), float(file2['W\'=W - W avg'][index]))
+        _hash[str(file2['Octant'][index])] +=1
+    file2.insert(len(file2.columns), ' ', '')
+    file2.insert(len(file2.columns), 'Octant ID', '')
+    file2.insert(len(file2.columns), '1', '')
+    file2.insert(len(file2.columns), '-1', '')
+    file2.insert(len(file2.columns), '2', '')
+    file2.insert(len(file2.columns), '-2', '')
+    file2.insert(len(file2.columns), '3', '')
+    file2.insert(len(file2.columns), '-3', '')
+    file2.insert(len(file2.columns), '4', '')
+    file2.insert(len(file2.columns), '-4', '')
+    file2[' '][1]='User Input'
+    file2['Octant ID'][0]='Overall Count'
+    file2['1'][0]=_hash['1']
+    file2['-1'][0]=_hash['-1']
+    file2['2'][0]=_hash['2']
+    file2['-2'][0]=_hash['-2']
+    file2['3'][0]=_hash['3']
+    file2['-3'][0]=_hash['-3']
+    file2['4'][0]=_hash['4']
+    file2['-4'][0]=_hash['-4']
+    # list_value=[]
+    # for i in range(0, row__, mod):
+    #     list_value.append(i)
+    # else: 
+    #     list_value.append(i+mod)
+    # print(list_value)
+
+
+
+    # print(_hash)
     file2.to_csv("octant_output.csv", index=False)
 
         
