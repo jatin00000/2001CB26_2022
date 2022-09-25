@@ -256,8 +256,14 @@ def octant_transition_count(mod=5000):
     except:
         print("Error in Part 14")
     
+    #15 Earlier, values in this column was 1 instead of +1
+    #So Making it with sign using format specifier
+    Pointer2['Octant']  = Pointer2['Octant'].apply(lambda x: '{:+d}'.format(x))
 
-    #15 Saving all changes to output file
+    #16 Renaming these columns according to this specification
+    Pointer2.rename(columns = {'Octant ID':' ', 'Octant':'Octact', '1':'+1', '2':'+2', '3':'+3', '4':'+4'}, inplace = True)
+
+    #17 Saving all changes to output file
     Pointer2.to_excel("output_octant_transition_identify.xlsx", index=False)
 
 
