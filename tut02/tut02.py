@@ -24,7 +24,43 @@ def octant(x,y,z):
         elif(x<0.000000000  and y>=0.000000000 ): return -2
         elif(x<0.000000000 and y<0.000000000 ): return -3
         elif(x>=0.000000000  and y<0.000000000 ): return -4
+def Value_put(Pointer2, mod_range, counter, Pointer_Transition_Range, title):
+    #Describing the parameters
+    # Pointer2 is a file pointer
+    # mod_range is a fstring containing in the format "<start value>-<end value>"
+    # title is used to pass the following for printing 'Overall Count' or 'Mod Transition Count'
+    # counter is a reference to print various row and column of matrix
+    # Pointer_Transition_Range is a pointer to dictionary for particular transition range
 
+    #1 Inserting the values which are fixed
+    Pointer2['Octant ID'][counter]=title
+    Pointer2['Octant ID'][counter+1]=mod_range
+    Pointer2['1'][counter+1]='To'
+    Pointer2[' '][counter+3]='From'
+    Pointer2['Octant ID'][counter+2]='Count'
+    Pointer2['Octant ID'][counter+3]='+1'
+    Pointer2['Octant ID'][counter+4]='-1'
+    Pointer2['Octant ID'][counter+5]='+2'
+    Pointer2['Octant ID'][counter+6]='-2'
+    Pointer2['Octant ID'][counter+7]='+3'
+    Pointer2['Octant ID'][counter+8]='-3'
+    Pointer2['Octant ID'][counter+9]='+4'
+    Pointer2['Octant ID'][counter+10]='-4'
+    Pointer2['1'][counter+2]='+1'
+    Pointer2['-1'][counter+2]='-1'
+    Pointer2['2'][counter+2]='+2'
+    Pointer2['-2'][counter+2]='-2'
+    Pointer2['3'][counter+2]='+3'
+    Pointer2['-3'][counter+2]='-3'
+    Pointer2['4'][counter+2]='+4'
+    Pointer2['-4'][counter+2]='-4'
+
+    #Space_according_to_Octant is a dictionary which contain position for particular transition value column as they need to come in a particular order
+    Space_according_to_Octant ={'1':3, '-1':4,'2':5,'-2':6,'3':7,'-3':8,'4':9, '-4':10} #{octant: position along horizontal direction}
+    #Feeding main values in the matrix
+    for i in ['1','-1','2','-2','3','-3','4','-4']:
+        for j in ['1','-1','2','-2','3','-3','4','-4']:
+            Pointer2[i][counter+Space_according_to_Octant[j]]=Pointer_Transition_Range[f'{i}{j}']
             
 def octant_transition_count(mod=5000):
     Pointer1 = pandas.read_excel("input_octant_transition_identify.xlsx")
@@ -153,9 +189,53 @@ def octant_transition_count(mod=5000):
     for i in range(len(Bounds_mod_range)-1):
         val = Bounds_mod_range[i]
         Transition_range_comb[val] = Transition_comb.copy()
-    #12 Saving all changes to output file
-    Pointer2.to_excel("output_octant_transition_identify.xlsx", index=False)
+
+    #12 For each counter, we will count transition
+    try: 
+        for counter, rows in Pointer2.iterrows():
+            if counter==0: 
+                continue #skip first counter as there is no row above it to make a transition
+            else :
+                val = mod * int(counter/mod) 
+                #it is formula to find lower bound of a range to which a counter belongs
+                # for 11555, counter/mod = 11555/5000 = 2.311
+                # int(2.311) = 2
+                # mod *2 = 5000*2 = 10,000 
+                i = Pointer2['Octant'][counter-1]
+                j = Pointer2['Octant'][counter]
+                #using fstring, make suitable key
+                Transition_range_comb[val][f'{i}{j}'] += 1
+                #increasing Transition_comb[key] to keep transition count for overall
+                Transition_comb[f'{i}{j}'] +=1
+    except ValueError():
+        print("ValueError in Part 12")
+    except:
+        print("Error in Part 12")
+
+
+    #variable to keep track of position to print Matrix of various ranges of transition count
+    counter = len(Bounds_mod_range)+1
+    #13 Writing 'Verified' at its position, its position remain fixed
+    Pointer2['Octant ID'][counter]='Verified'
+
+    try: 
+        #inserting verified values for each octant
+        Pointer2['1'][counter]=_hash['1']
+        Pointer2['-1'][counter]=_hash['-1']
+        Pointer2['2'][counter]=_hash['2']
+        Pointer2['-2'][counter]=_hash['-2']
+        Pointer2['3'][counter]=_hash['3']
+        Pointer2['-3'][counter]=_hash['-3']
+        Pointer2['4'][counter]=_hash['4']
+        Pointer2['-4'][counter]=_hash['-4']
+    except ValueError():
+        print("ValueError in Part 13")
+    except:
+        print("Error in Part 13")
+
     
+    #14 Saving all changes to output file
+    Pointer2.to_excel("output_octant_transition_identify.xlsx", index=False)
 
 
 
