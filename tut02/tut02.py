@@ -233,10 +233,32 @@ def octant_transition_count(mod=5000):
     except:
         print("Error in Part 13")
 
-    
-    #14 Saving all changes to output file
-    Pointer2.to_excel("output_octant_transition_identify.xlsx", index=False)
+    #leaving difference of 3 row to write Overall transition count
+    counter+=3
+    #Writing overall transition count table using Value_put function
+    Value_put(Pointer2, ' ', counter, Transition_comb, 'Overall Transition Count')
 
+    #Leaving space of rows, 
+    #counter = 1 row for 'To' + 1 row for 'From' + 8 rows for 8 octants + 2 row for blank space + 1 for beginning of next matrix
+    counter+=14
+
+    try: 
+        #14 Using For loop, putting each matrix in excel file
+        for i in range(len(Bounds_mod_range)-1): #For each range
+            val = Bounds_mod_range[i]
+            #Calling Function Value_put()
+            Value_put(Pointer2, f'{Bounds_mod_range[i]}-{Bounds_mod_range[i+1]-1}', counter, Transition_range_comb[val], 'Mod Transition Count')
+            counter+=13 #Jumping to next desired location
+    except TypeError():
+        print("TypeError in Part 14")
+    except ValueError():
+        print("ValueError in Part 14")
+    except:
+        print("Error in Part 14")
+    
+
+    #15 Saving all changes to output file
+    Pointer2.to_excel("output_octant_transition_identify.xlsx", index=False)
 
 
 ###Code
