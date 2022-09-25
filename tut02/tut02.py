@@ -266,6 +266,21 @@ def octant_transition_count(mod=5000):
     #17 Saving all changes to output file
     Pointer2.to_excel("output_octant_transition_identify.xlsx", index=False)
 
+    #18 Again opening file using openpyxl
+    wb = load_workbook("output_octant_transition_identify.xlsx")
+    ws = wb["Sheet1"] #Making current sheet active
+
+    #Coloring the cell with 'User Input' according to specification
+    ws["L3"].fill = PatternFill("solid", start_color="FFFF00")
+    #PatternFill function is used to give background color to cell
+
+    #Formatting the cell with value 'Mod 5000' according to specification
+    ws["M3"].fill = PatternFill("solid", start_color="C6EFCE")
+    #Font() is used to give font color to the cell
+    ws["M3"].font =  Font(color = "006100")
+
+    #19 Saving after adding color
+    wb.save("output_octant_transition_identify.xlsx")
 
 ###Code
 
