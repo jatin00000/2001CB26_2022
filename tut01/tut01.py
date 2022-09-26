@@ -100,7 +100,7 @@ def octact_identification(mod=5000):
     Bounds_mod_range=[]
     for count in range(0, row__, mod): #start with zero till number of rows and increment by mod
         Bounds_mod_range.append(count)
-    Bounds_mod_range.append(row__+1)
+    Bounds_mod_range.append(row__)
 
     #Again making a dictionary, that will have for each octant all the intervals in form of list
     #Example {'1':[[0,4999,0], [5000,9999,0], .....], '-1':[[0,4999,0], [5000,9999,0], .....], ..........}
@@ -114,7 +114,7 @@ def octact_identification(mod=5000):
     for index, rows in file2.iterrows():
         # print(index)
         for idx in Count_range_wise[str(file2['Octant'][index])]:
-                if index>=idx[0] and index<idx[1]:
+                if index>=idx[0] and index<=idx[1]:
                     #if lies in this interval, increment the count
                     idx[2]+=1
                     #we don't need to look furthur
