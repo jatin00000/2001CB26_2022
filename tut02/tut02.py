@@ -154,7 +154,7 @@ def octant_transition_count(mod=5000):
     for counter, rows in Pointer2.iterrows():
         # print(counter)
         for idx in Count_range_wise[str(Pointer2['Octant'][counter])]:
-                if counter>=idx[0] and counter<idx[1]:
+                if counter>=idx[0] and counter<=idx[1]:
                     #if lies in this interval, increment the count
                     idx[2]+=1
                     #we don't need to look furthur
