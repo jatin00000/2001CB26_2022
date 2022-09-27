@@ -73,8 +73,42 @@ def octant_longest_subsequence_count():
         except :
             print('Some Other type error in Part 2')
 
+        #3Counting longest Subsequence for each octant
+        Dict_longes_Sub_seq = { '1':[0,0],'-1':[0,0],'2':[0,0],'-2':[0,0],'3':[0,0],'-3':[0,0],'4':[0,0],'-4':[0,0]}
+        # here key = Octant Value and Value  = a list which 0th index is length of longest subsequence for this octant and 
+        # number of times this longest sequence has occured at 1st index
 
-        #3 Saving all changes to output file
+        try:
+            #starting from first index
+            index = 0
+            #It should always be two less than number of rows, one due to header and other as indexing starts from zero
+            while index<(row__-1):
+                #Storing the octant for which, we will find the current longest subsequence
+                cur = str(Pointer2['Octant'][index])
+                #starts with length zero initially
+                length = 0
+                #keep running this while loop until we find character same as our cur octant
+                while str(Pointer2['Octant'][index]) == cur and index<(row__-1):
+                    length += 1 #Increase current subsequence length
+                    index += 1 #Move to next index
+                
+                #If our current subsequence length is greater than previous Greatest Subsequence for current octant
+                if length > Dict_longes_Sub_seq[cur][0]:
+                    Dict_longes_Sub_seq[cur][0] = length #Make current subsequence length as Greatest Subsequence for current octant
+                    Dict_longes_Sub_seq[cur][1] = 1 #It has occured first time, so count is 1
+            
+                #Else If our current subsequence length is equal to previous Greatest Subsequence for current octant
+                elif length == Dict_longes_Sub_seq[cur][0]:
+                    #Just Increment the count for this length of Subsequence
+                    Dict_longes_Sub_seq[cur][1] += 1
+        except ValueError:
+            Print('Value Error in Part 3')
+        except :
+            Print('Some Other Errot=r in Part 3')
+
+        
+
+        #4 Saving all changes to output file
         Pointer2.to_excel("output_octant_longest_subsequence.xlsx", index=False)
     except FileNotFoundError():
         print("File Not Found")
