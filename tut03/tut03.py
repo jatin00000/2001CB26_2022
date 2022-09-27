@@ -106,9 +106,43 @@ def octant_longest_subsequence_count():
         except :
             Print('Some Other Errot=r in Part 3')
 
-        
+        #4 Putting the Length and count of longest Subsequence for each octant in xlsx file
+        #Position of cells will remain fixed, it doesn't depend on any other parameter
+        Pointer2['Count'][0] = '+1'
+        Pointer2['Count'][1] = '-1'
+        Pointer2['Count'][2] = '+2'
+        Pointer2['Count'][3] = '-2'
+        Pointer2['Count'][4] = '+3'
+        Pointer2['Count'][5] = '-3'
+        Pointer2['Count'][6] = '+4'
+        Pointer2['Count'][7] = '-4'
+        #Putting Length of Longest Subsequences
+        Pointer2['Longest Subsquence Length'][0] = Dict_longes_Sub_seq['1'][0]
+        Pointer2['Longest Subsquence Length'][1] = Dict_longes_Sub_seq['-1'][0]
+        Pointer2['Longest Subsquence Length'][2] = Dict_longes_Sub_seq['2'][0]
+        Pointer2['Longest Subsquence Length'][3] = Dict_longes_Sub_seq['-2'][0]
+        Pointer2['Longest Subsquence Length'][4] = Dict_longes_Sub_seq['3'][0]
+        Pointer2['Longest Subsquence Length'][5] = Dict_longes_Sub_seq['-3'][0]
+        Pointer2['Longest Subsquence Length'][6] = Dict_longes_Sub_seq['4'][0]
+        Pointer2['Longest Subsquence Length'][7] = Dict_longes_Sub_seq['-4'][0]
+        #Putting Count of Longest Subsequence
+        Pointer2['Count1'][0] = Dict_longes_Sub_seq['1'][1]
+        Pointer2['Count1'][1] = Dict_longes_Sub_seq['-1'][1]
+        Pointer2['Count1'][2] = Dict_longes_Sub_seq['2'][1]
+        Pointer2['Count1'][3] = Dict_longes_Sub_seq['-2'][1]
+        Pointer2['Count1'][4] = Dict_longes_Sub_seq['3'][1]
+        Pointer2['Count1'][5] = Dict_longes_Sub_seq['-3'][1]
+        Pointer2['Count1'][6] = Dict_longes_Sub_seq['4'][1]
+        Pointer2['Count1'][7] = Dict_longes_Sub_seq['-4'][1]
 
-        #4 Saving all changes to output file
+        #5 Earlier, values in this column was 1 instead of +1
+        #So Making it with sign using format specifier
+        Pointer2['Octant']  = Pointer2['Octant'].apply(lambda x: '{:+d}'.format(x))
+
+        #6 Renaming these columns according to this specification
+        Pointer2.rename(columns = {'Octant':'Octact', 'Count1':'Count'}, inplace = True)
+
+        #7 Saving all changes to output file
         Pointer2.to_excel("output_octant_longest_subsequence.xlsx", index=False)
     except FileNotFoundError():
         print("File Not Found")
