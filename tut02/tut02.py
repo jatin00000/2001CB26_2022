@@ -193,16 +193,16 @@ def octant_transition_count(mod=5000):
     #12 For each counter, we will count transition
     try: 
         for counter, rows in Pointer2.iterrows():
-            if counter==0: 
-                continue #skip first counter as there is no row above it to make a transition
+            if counter==(row__-1): 
+                continue #skip last counter as there is no row below it to make a transition
             else :
                 val = mod * int(counter/mod) 
                 #it is formula to find lower bound of a range to which a counter belongs
                 # for 11555, counter/mod = 11555/5000 = 2.311
                 # int(2.311) = 2
                 # mod *2 = 5000*2 = 10,000 
-                i = Pointer2['Octant'][counter-1]
-                j = Pointer2['Octant'][counter]
+                i = Pointer2['Octant'][counter]
+                j = Pointer2['Octant'][counter+1]
                 #using fstring, make suitable key
                 Transition_range_comb[val][f'{i}{j}'] += 1
                 #increasing Transition_comb[key] to keep transition count for overall
