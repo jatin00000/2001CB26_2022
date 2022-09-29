@@ -60,7 +60,7 @@ def Value_put(Pointer2, mod_range, counter, Pointer_Transition_Range, title):
     #Feeding main values in the matrix
     for i in ['1','-1','2','-2','3','-3','4','-4']:
         for j in ['1','-1','2','-2','3','-3','4','-4']:
-            Pointer2[i][counter+Space_according_to_Octant[j]]=Pointer_Transition_Range[f'{i}{j}']
+            Pointer2[i][counter+Space_according_to_Octant[j]]=Pointer_Transition_Range[f'{j}{i}']
             
 def octant_transition_count(mod=5000):
     Pointer1 = pandas.read_excel("input_octant_transition_identify.xlsx")
