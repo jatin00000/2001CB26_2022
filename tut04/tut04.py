@@ -77,14 +77,80 @@ def octant_longest_subsequence_count_with_range():
         except :
             print('Some Other type error in Part 2')
 
-        #3 Earlier, values in this column was 1 instead of +1
+        #3Counting longest Subsequence for each octant
+        Dict_longes_Sub_seq = { '1':[0,0,[]],'-1':[0,0,[]],'2':[0,0,[]],'-2':[0,0,[]],'3':[0,0,[]],'-3':[0,0,[]],'4':[0,0,[]],'-4':[0,0,[]]}
+        # here key = Octant Value and Value  = a list which 0th index is length of longest subsequence for this octant and 
+        # number of times this longest sequence has occured at 1st index and list of time interval in form of another list [start time, end time]
+
+        try:
+            #starting from first index
+            index = 0
+            #It should always be two less than number of rows, one due to header and other as indexing starts from zero
+            while index<(row__-1):
+                #Storing the octant for which, we will find the current longest subsequence
+                cur = str(Pointer2['Octant'][index])
+                #starts with length zero initially
+                length = 0
+                start_time = Pointer2['Time'][index] #storing the starting time of beginning of sequence
+                #keep running this while loop until we find character same as our cur octant
+                while str(Pointer2['Octant'][index]) == cur and index<(row__-1):
+                    length += 1 #Increase current subsequence length
+                    index += 1 #Move to next index
+                
+                #If our current subsequence length is greater than previous Greatest Subsequence for current octant
+                if length > Dict_longes_Sub_seq[cur][0]:
+                    Dict_longes_Sub_seq[cur][0] = length #Make current subsequence length as Greatest Subsequence for current octant
+                    Dict_longes_Sub_seq[cur][1] = 1 #It has occured first time, so count is 1
+                    Dict_longes_Sub_seq[cur][2].clear() #Empty the list of list as it is new beginning
+                    Dict_longes_Sub_seq[cur][2].append([start_time,Pointer2['Time'][index-1]]) #Appending the list interval
+            
+                #Else If our current subsequence length is equal to previous Greatest Subsequence for current octant
+                elif length == Dict_longes_Sub_seq[cur][0]:
+                    #Just Increment the count for this length of Subsequence
+                    Dict_longes_Sub_seq[cur][1] += 1
+                    #Appending the current time interval in the list of lists of time
+                    Dict_longes_Sub_seq[cur][2].append([start_time,Pointer2['Time'][index-1]])
+        except ValueError:
+            Print('Value Error in Part 3')
+        except :
+            Print('Some Other Errot=r in Part 3')
+        #4 Putting the Length and count of longest Subsequence for each octant in xlsx file
+        #Position of cells will remain fixed, it doesn't depend on any other parameter
+        Pointer2['Count'][0] = '+1'
+        Pointer2['Count'][1] = '-1'
+        Pointer2['Count'][2] = '+2'
+        Pointer2['Count'][3] = '-2'
+        Pointer2['Count'][4] = '+3'
+        Pointer2['Count'][5] = '-3'
+        Pointer2['Count'][6] = '+4'
+        Pointer2['Count'][7] = '-4'
+        #Putting Length of Longest Subsequences
+        Pointer2['Longest Subsquence Length'][0] = Dict_longes_Sub_seq['1'][0]
+        Pointer2['Longest Subsquence Length'][1] = Dict_longes_Sub_seq['-1'][0]
+        Pointer2['Longest Subsquence Length'][2] = Dict_longes_Sub_seq['2'][0]
+        Pointer2['Longest Subsquence Length'][3] = Dict_longes_Sub_seq['-2'][0]
+        Pointer2['Longest Subsquence Length'][4] = Dict_longes_Sub_seq['3'][0]
+        Pointer2['Longest Subsquence Length'][5] = Dict_longes_Sub_seq['-3'][0]
+        Pointer2['Longest Subsquence Length'][6] = Dict_longes_Sub_seq['4'][0]
+        Pointer2['Longest Subsquence Length'][7] = Dict_longes_Sub_seq['-4'][0]
+        #Putting Count of Longest Subsequence
+        Pointer2['Count1'][0] = Dict_longes_Sub_seq['1'][1]
+        Pointer2['Count1'][1] = Dict_longes_Sub_seq['-1'][1]
+        Pointer2['Count1'][2] = Dict_longes_Sub_seq['2'][1]
+        Pointer2['Count1'][3] = Dict_longes_Sub_seq['-2'][1]
+        Pointer2['Count1'][4] = Dict_longes_Sub_seq['3'][1]
+        Pointer2['Count1'][5] = Dict_longes_Sub_seq['-3'][1]
+        Pointer2['Count1'][6] = Dict_longes_Sub_seq['4'][1]
+        Pointer2['Count1'][7] = Dict_longes_Sub_seq['-4'][1]
+
+        #5 Earlier, values in this column was 1 instead of +1
         #So Making it with sign using format specifier
         Pointer2['Octant']  = Pointer2['Octant'].apply(lambda x: '{:+d}'.format(x))
 
-        #4 Renaming these columns according to this specification;
+        #6 Renaming these columns according to this specification;
         Pointer2.rename(columns = {'Octant':'Octact', 'Count1':'Count', 'Column 1':'Count', 'Column 2':'Longest Subsquence Length', 'Column 3':'Count', 'Dummy':' '}, inplace = True)
 
-        #5 Saving all changes to output file
+        #7 Saving all changes to output file
         Pointer2.to_excel('output_octant_longest_subsequence_with_range.xlsx', index=False)
     except FileNotFoundError():
         print("File Not Found")
