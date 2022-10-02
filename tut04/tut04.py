@@ -143,6 +143,33 @@ def octant_longest_subsequence_count_with_range():
         Pointer2['Count1'][6] = Dict_longes_Sub_seq['4'][1]
         Pointer2['Count1'][7] = Dict_longes_Sub_seq['-4'][1]
 
+        #Using for loop, Printing various time interval in xlsx file
+        index = 0
+        #For each octant
+        for i in Dict_longes_Sub_seq:
+            #just to put octant with signs using this dictionary
+            Num_with_sign = {'1':'+1', '-1':'-1','2':'+2','-2':'-2','3':'+3', '-3':'-3','4':'+4','-4':'-4'}
+
+            #First Length and count of Longest Subsequence for each octant
+            Pointer2['Column 1'][index] = Num_with_sign[i]
+            Pointer2['Column 2'][index] = Dict_longes_Sub_seq[i][0]
+            Pointer2['Column 3'][index] = Dict_longes_Sub_seq[i][1]
+
+            #Increment the number of row
+            #Printing 'Time', 'From' and 'To' in next subsequent cells
+            index += 1
+            Pointer2['Column 1'][index] = 'Time'
+            Pointer2['Column 2'][index] = 'From'
+            Pointer2['Column 3'][index] = 'To'
+
+            #printing the time interval for each octant
+            index += 1
+            for j in range(len(Dict_longes_Sub_seq[i][2])):
+                Pointer2['Column 2'][index+j] = Dict_longes_Sub_seq[i][2][j][0]
+                Pointer2['Column 3'][index+j] = Dict_longes_Sub_seq[i][2][j][1]
+            # Increment the variable index to leave the rows equal to number of time interval
+            index += len(Dict_longes_Sub_seq[i][2])
+
         #5 Earlier, values in this column was 1 instead of +1
         #So Making it with sign using format specifier
         Pointer2['Octant']  = Pointer2['Octant'].apply(lambda x: '{:+d}'.format(x))
