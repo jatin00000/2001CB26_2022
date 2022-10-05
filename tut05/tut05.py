@@ -33,8 +33,6 @@ def octant(x,y,z):
         elif(x>=0.000000000  and y<0.000000000 ): return -4
 
 octant_name_id_mapping = {"1":"Internal outward interaction", "-1":"External outward interaction", "2":"External Ejection", "-2":"Internal Ejection", "3":"External inward interaction", "-3":"Internal inward interaction", "4":"Internal sweep", "-4":"External sweep"}
-
-
 def octant_range_names(mod=5000):
     Pointer1 = pandas.read_excel("octant_input.xlsx")
     Pointer1.to_excel("octant_output_ranking_excel.xlsx", sheet_name='octant_output_Ranking' ,index = False)
@@ -69,17 +67,22 @@ def octant_range_names(mod=5000):
     #creating a dictionary to keep count of the eight octant
     _hash = {'1':0, '-1':0, '2':0, '-2':0, '3':0, '-3':0, '4':0, '-4':0}
     
-    #iterrows() a similar function as enumerate()
-    for counter, rows in Pointer2.iterrows():
-        #we can access any row of a particular column by
-        #<file_pointer>['<column_label>'][counter] = <value>
-        Pointer2['U\'=U - U avg'][counter]=('{:.9f}'.format(float(Pointer2['U'][counter])-avg_U)) #subtracting individual reading from average
-        Pointer2['V\'=V - V avg'][counter]=('{:.9f}'.format(float(Pointer2['V'][counter])-avg_V))
-        Pointer2['W\'=W - W avg'][counter]=('{:.9f}'.format(float(Pointer2['W'][counter])-avg_W))
-        #calling the octant() function to give octant value, and storing it to the cell in octant colunn
-        Pointer2['Octant'][counter]=octant(round(float(Pointer2['U\'=U - U avg'][counter]),9), round(float(Pointer2['V\'=V - V avg'][counter]),9), round(float(Pointer2['W\'=W - W avg'][counter]),9))
-        #increasing the octant count in dictionary
-        _hash[str(Pointer2['Octant'][counter])] +=1
+    try:
+        #iterrows() a similar function as enumerate()
+        for counter, rows in Pointer2.iterrows():
+            #we can access any row of a particular column by
+            #<file_pointer>['<column_label>'][counter] = <value>
+            Pointer2['U\'=U - U avg'][counter]=('{:.9f}'.format(float(Pointer2['U'][counter])-avg_U)) #subtracting individual reading from average
+            Pointer2['V\'=V - V avg'][counter]=('{:.9f}'.format(float(Pointer2['V'][counter])-avg_V))
+            Pointer2['W\'=W - W avg'][counter]=('{:.9f}'.format(float(Pointer2['W'][counter])-avg_W))
+            #calling the octant() function to give octant value, and storing it to the cell in octant colunn
+            Pointer2['Octant'][counter]=octant(round(float(Pointer2['U\'=U - U avg'][counter]),9), round(float(Pointer2['V\'=V - V avg'][counter]),9), round(float(Pointer2['W\'=W - W avg'][counter]),9))
+            #increasing the octant count in dictionary
+            _hash[str(Pointer2['Octant'][counter])] +=1
+    except ValueError:
+        print('Value error in Part 2')
+    except :
+        print('Other error in Part 2')
 
     #3 Adding the remaining columns same as adding columns U avg, V avg
     Pointer2.insert(len(Pointer2.columns), 'Dummy', '')
@@ -98,8 +101,40 @@ def octant_range_names(mod=5000):
     Pointer2['Octant ID'][1]='Mod '+str(mod)
     Pointer2['Octant ID'][0]='Overall Count'
 
+    #5 Writing the overall count for each octant at respective position
+    #There position will also remain fix, independent of value of mod
+    Pointer2['1'][0]=_hash['1']
+    Pointer2['-1'][0]=_hash['-1']
+    Pointer2['2'][0]=_hash['2']
+    Pointer2['-2'][0]=_hash['-2']
+    Pointer2['3'][0]=_hash['3']
+    Pointer2['-3'][0]=_hash['-3']
+    Pointer2['4'][0]=_hash['4']
+    Pointer2['-4'][0]=_hash['-4']
+
+    try:
+        #6 Generating the values that will be bound of intervals like 0,5000,10000 for mod = 5000 and storing them in list
+        Bounds_mod_range=[]
+        for count in range(0, row__, mod): #start with zero till number of rows and increment by mod
+            Bounds_mod_range.append(count)
+        Bounds_mod_range.append(row__+1)
+
+        #Again making a dictionary, that will have for each octant all the intervals in form of list
+        #Example {'1':[[0,4999,0], [5000,9999,0], .....], '-1':[[0,4999,0], [5000,9999,0], .....], ..........}
+        #        'octant_value' : [[start_counter, end_counter, count of value]]
+        Count_range_wise = {'1':[], '-1':[], '2':[], '-2':[], '3':[], '-3':[], '4':[], '-4':[]}
+        for counter in range(len(Bounds_mod_range)-1):
+            for count in Count_range_wise:
+                Count_range_wise[count].append([Bounds_mod_range[counter],Bounds_mod_range[counter+1]-1,0])
+    except TypeError:
+        print('TypeError in Part 6')
+    except ValueError:
+        print('Value Error in Part 6')
+    except:
+        print('Other error in Part 6')
+
     
-    #5 Saving all changes to output file
+    #7 Saving all changes to output file
     Pointer2.to_excel("octant_output_ranking_excel.xlsx", sheet_name='octant_output_Ranking' ,index = False)
     
     
