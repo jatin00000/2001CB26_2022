@@ -33,6 +33,81 @@ def octant(x,y,z):
         elif(x>=0.000000000  and y<0.000000000 ): return -4
 
 octant_name_id_mapping = {"1":"Internal outward interaction", "-1":"External outward interaction", "2":"External Ejection", "-2":"Internal Ejection", "3":"External inward interaction", "-3":"Internal inward interaction", "4":"Internal sweep", "-4":"External sweep"}
+def Value_put(Pointer2, mod_range, counter, Pointer_Transition_Range, title):
+    #Describing the parameters
+    # Pointer2 is a file pointer
+    # mod_range is a fstring containing in the format "<start value>-<end value>"
+    # title is used to pass the following for printing 'Overall Count' or 'Mod Transition Count'
+    # counter is a reference to print various row and column of matrix
+    # Pointer_Transition_Range is a pointer to dictionary for particular transition range
+
+    #1 Inserting the values which are fixed
+    Pointer2['Octant ID'][counter]=title
+    Pointer2['Octant ID'][counter+1]=mod_range
+    Pointer2['1'][counter+1]='To'
+    Pointer2[' '][counter+3]='From'
+    Pointer2['Octant ID'][counter+2]='Count'
+    Pointer2['Octant ID'][counter+3]='+1'
+    Pointer2['Octant ID'][counter+4]='-1'
+    Pointer2['Octant ID'][counter+5]='+2'
+    Pointer2['Octant ID'][counter+6]='-2'
+    Pointer2['Octant ID'][counter+7]='+3'
+    Pointer2['Octant ID'][counter+8]='-3'
+    Pointer2['Octant ID'][counter+9]='+4'
+    Pointer2['Octant ID'][counter+10]='-4'
+    Pointer2['1'][counter+2]='+1'
+    Pointer2['-1'][counter+2]='-1'
+    Pointer2['2'][counter+2]='+2'
+    Pointer2['-2'][counter+2]='-2'
+    Pointer2['3'][counter+2]='+3'
+    Pointer2['-3'][counter+2]='-3'
+    Pointer2['4'][counter+2]='+4'
+    Pointer2['-4'][counter+2]='-4'
+
+    #Space_according_to_Octant is a dictionary which contain position for particular transition value column as they need to come in a particular order
+    Space_according_to_Octant ={'1':3, '-1':4,'2':5,'-2':6,'3':7,'-3':8,'4':9, '-4':10} #{octant: position along horizontal direction}
+    #Feeding main values in the matrix
+    for i in ['1','-1','2','-2','3','-3','4','-4']:
+        for j in ['1','-1','2','-2','3','-3','4','-4']:
+            Pointer2[i][counter+Space_according_to_Octant[j]]=Pointer_Transition_Range[f'{j}{i}']
+
+def Printer(_hash, Pointer2, index, Count_list):
+       #Function to Print Rank for each octant
+       #Also keep count number of times Rank 1 has occured for each octant
+
+        _hash = dict(sorted(_hash.items(), key= lambda x:x[1], reverse=True))
+        #sorts _hash based on the value of key as applied to each element of the list
+        #To sort in decreasing fashion, reverse = True is applied
+        #It returns as a list and we need it in dictionary format, so converted
+
+        #This dictionary _Rank stores key as octant and value as its Rank
+        _Rank = dict()
+        Rank = 1 #Just a variable to assign rank to each octant
+        #For each Octant, are sorted in decreasing order, so Octant with maximum count will come first
+        # +1:414, -1:688, +2:815   ------After Sorting----->>>> +2:815, -1:688, +1:414
+        for i in _hash:
+            _Rank[i]=Rank  #assign this octant the following rank
+            Rank += 1 #Increase the rank to rank+1 as next element will have less number of count
+
+        #On closely looking, one can see that Rank 1 instead of having all Rank 1 octant name written below it
+        #Have value of Rank of +1 octant in it
+        #Using them as Column headings instead of Octact Symbol
+        List_label = {'1':'Rank 1', '-1':'Rank 2', '2':'Rank 3', '-2':'Rank 4', '3':'Rank 5', '-3':'Rank 6', '4':'Rank 7', '-4':'Rank 8'}
+        for i in _Rank:
+            #For each range of mod, in that particular row having number as index
+            #assigning rank for each octant
+            #Column come from Above List_label dictionary
+            Pointer2[List_label[i]][index]=_Rank[i]
+
+            #If any octant has Rank 1st
+            if(_Rank[i]==1):
+                #In the column 'Rank1 Octant ID', put this octant
+                Pointer2['Rank1 Octant ID'][index]=i
+                #In the column 'Rank1 Octant Name', put its mapping
+                Pointer2['Rank1 Octant Name'][index]=octant_name_id_mapping[i]
+                #Rank 1st has occured for this octant, increase the count of number of times rank 1st has occured for this octant
+                Count_list[i] += 1
+
 def octant_range_names(mod=5000):
     Pointer1 = pandas.read_excel("octant_input.xlsx")
     Pointer1.to_excel("octant_output_ranking_excel.xlsx", sheet_name='octant_output_Ranking' ,index = False)
@@ -161,8 +236,101 @@ def octant_range_names(mod=5000):
             #<file_handler>['<column_for_octant>'][row number] = string of Count_range_wise[key is octant][serial number of mod range][count of values]
     Pointer2.rename(columns = {'Dummy':''}, inplace = True)
 
+    #10 Inserting new columns according to requirement
+    Pointer2.insert(len(Pointer2.columns), 'Rank 1', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 2', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 3', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 4', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 5', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 6', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 7', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank 8', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank1 Octant ID', '')
+    Pointer2.insert(len(Pointer2.columns), 'Rank1 Octant Name', '')
+
+    #11 This dictionary Count_list contain number of times rank 1st occur for each octant
+    Count_list ={'1':0, '-1':0, '2':0, '-2':0, '3':0, '-3':0, '4':0, '-4':0}
+
+    #Calling the function Printer() to print Rank for overall count and passing it dictionary _hash, 
+    #1st Row will have Rank for overall count so index = 0
+    Printer(_hash, Pointer2, 0, Count_list)
+
+    #Since we don't want to include count of Rank 1 of overall count, we redefine it
+    Count_list ={'1':0, '-1':0, '2':0, '-2':0, '3':0, '-3':0, '4':0, '-4':0}
+
+    #mod ranges will start from 2nd row
+    #This index variable is used to print rank list for each mod range
+    index = 2
+
+    try:
+        #12 For each mod range
+        for i in range(len(Bounds_mod_range)-1):
+            #Calling the Printer() Function
+            # Octant ID	      +1	-1	     +2
+            # Overall Count	 2610	4603	4855
+            # Mod 5000			
+            # 0-4999	      414	 688	815        <<<<===== Row number 2
+            # 5000-9999	      380	 757    820
+            # 10000-14999	  621	1016	599
+            # 15000-19999	  366	682	    948
+
+            #Since Function needs a dictionary in octant:count form 
+            #Directly accessing the cells for each octant for each mod range and passing them as dictionary through pre-defining as number of octant are 8 only
+            #Since ranks will be printed in same row, passing (index + i) 
+            #As for 2nd mod range, we will do all the operations in (index+1)th row
+            Printer({'1':Pointer2['1'][index+i],
+            '-1':Pointer2['-1'][index+i],
+            '2':Pointer2['2'][index+i],
+            '-2':Pointer2['-2'][index+i],
+            '3':Pointer2['3'][index+i],
+            '-3':Pointer2['-3'][index+i],
+            '4':Pointer2['4'][index+i],
+            '-4':Pointer2['-4'][index+i],
+            }, Pointer2, index+i, Count_list)
+    except ValueError:
+        print('Value Error in Part 12')
+    except :
+        print('Other Error in Part 12')
+
+    #Moving to three row below to the row having count of last mod range, Three row space has been left according to specification
+    index += 2 + len(Bounds_mod_range)
+
+    #13 There position will remain unaffected by other things so directly putting values in cells
+    Pointer2['1'][index] = 'Octant ID'
+    Pointer2['1'][index+1] = '1'
+    Pointer2['1'][index+2] = '-1'
+    Pointer2['1'][index+3] = '2'
+    Pointer2['1'][index+4] = '-2'
+    Pointer2['1'][index+5] = '3'
+    Pointer2['1'][index+6] = '-3'
+    Pointer2['1'][index+7] = '4'
+    Pointer2['1'][index+8] = '-4'
+    Pointer2['-1'][index] = 'Octant Name'
+
+    #Putting the mapping of octants
+    Pointer2['-1'][index+1] = octant_name_id_mapping[ '1']
+    Pointer2['-1'][index+2] = octant_name_id_mapping[ '-1']
+    Pointer2['-1'][index+3] = octant_name_id_mapping[ '2']
+    Pointer2['-1'][index+4] = octant_name_id_mapping[ '-2']
+    Pointer2['-1'][index+5] = octant_name_id_mapping[ '3']
+    Pointer2['-1'][index+6] = octant_name_id_mapping[ '-3']
+    Pointer2['-1'][index+7] = octant_name_id_mapping[ '4']
+    Pointer2['-1'][index+8] = octant_name_id_mapping[ '-4']
+
+    #Putting the number of times Rank 1st has occured for each octant
+    Pointer2['2'][index] = 'Count of Rank 1 Mod Values'
+    Pointer2['2'][index+1] = Count_list[ '1']
+    Pointer2['2'][index+2] = Count_list[ '-1']
+    Pointer2['2'][index+3] = Count_list[ '2']
+    Pointer2['2'][index+4] = Count_list[ '-2']
+    Pointer2['2'][index+5] = Count_list[ '3']
+    Pointer2['2'][index+6] = Count_list[ '-3']
+    Pointer2['2'][index+7] = Count_list[ '4']
+    Pointer2['2'][index+8] = Count_list[ '-4']
+
     
-    #15 Saving all changes to output file
+
+    #14 Saving all changes to output file
     Pointer2.to_excel("octant_output_ranking_excel.xlsx", sheet_name='octant_output_Ranking' ,index = False)
     
     
