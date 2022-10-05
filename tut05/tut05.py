@@ -133,8 +133,36 @@ def octant_range_names(mod=5000):
     except:
         print('Other error in Part 6')
 
+    try:
+        #7 For each mod range of each octant, count number of octant in it
+        for counter, rows in Pointer2.iterrows():
+            # print(counter)
+            for idx in Count_range_wise[str(Pointer2['Octant'][counter])]:
+                    if counter>=idx[0] and counter<=idx[1]:
+                        #if lies in this interval, increment the count
+                        idx[2]+=1
+                        #we don't need to look furthur
+                        break
+    except KeyError:
+        print('Key Error in Part 7')
+    except:
+        print('Other Error in Part 7')
+
+    #8 Adding mod range labels in octant_output.csv file
+    for count in range(len(Bounds_mod_range)-1):
+        #counter+2 as they will start to fill from 2nd row in Octant ID column
+        #will insert the range as an string
+        Pointer2['Octant ID'][count+2]=str(Count_range_wise['1'][count][0])+'-'+str(Count_range_wise['1'][count][1])
+
+    #9 Filling count of each octant in each mod range into csv file
+    for key, value in Count_range_wise.items(): #iterating through dictionary
+        for counter in range(len(Bounds_mod_range)-1): #number of ranges of mod will be constant
+            Pointer2[str(key)][counter+2]=int(Count_range_wise[key][counter][2])
+            #<file_handler>['<column_for_octant>'][row number] = string of Count_range_wise[key is octant][serial number of mod range][count of values]
+    Pointer2.rename(columns = {'Dummy':''}, inplace = True)
+
     
-    #7 Saving all changes to output file
+    #15 Saving all changes to output file
     Pointer2.to_excel("octant_output_ranking_excel.xlsx", sheet_name='octant_output_Ranking' ,index = False)
     
     
