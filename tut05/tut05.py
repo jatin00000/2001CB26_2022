@@ -328,9 +328,67 @@ def octant_range_names(mod=5000):
     Pointer2['2'][index+7] = Count_list[ '4']
     Pointer2['2'][index+8] = Count_list[ '-4']
 
-    
+    #14
+    """
+    According to Output file, The header should be like
+    According to output file:::::::
+    <empty cells>	|   |     |     |       |       |       |	1 |	-1 |	2| 	-2| 3|  .... so on
+    Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+      0  |32.8| 5.97|	3.08|	27.30653354 |	0.048330476 |	0.107577744	 | 5.493466465 | ..... so on
 
-    #14 Saving all changes to output file
+    My current output:::::::::::::::::::
+    Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+      0  |32.8| 5.97|	3.08|	27.30653354 |	0.048330476 |	0.107577744	 | 5.493466465 | ..... so on
+
+    So i basically inserted a new row at index 0 containing names of columes as value for each column
+
+    Pandas.concat() will make a new dataframe by
+    Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........      <<<<<<<================ This new row
+           + Plus
+    old dataframe Pointed by Pointer2 variable
+
+    ===> Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+                +
+         Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+           0  |32.8| 5.97|	3.08|	27.30653354 |	0.048330476 |	0.107577744	 | 5.493466465 | ..... so on
+    
+    ===> Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+         Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+          0  |32.8| 5.97|	3.08|	27.30653354 |	0.048330476 |	0.107577744	 | 5.493466465 | ..... so on
+    """
+
+    """
+    pnadas.concat(<dataframe 1>, <dataframe 2>)
+    <dataframe 1> = list containing columns name and these will be assigned to columns in the sequence respectively
+    <file_Pointer>.columns.values will return a list of columns name
+    columns = Pointer2.columns will assign each column name from list in same columns itself
+
+    <dataframe 2> is pointing to our old Pointer2 only
+    Store the new dataframe in Pointer2 only
+    """
+    try:
+        Pointer2 = pandas.concat([pandas.DataFrame([list(Pointer2.columns.values)],columns=Pointer2.columns),Pointer2],ignore_index=True)
+        #Since we have created a new dataframe, so the index of excel needs to be reseted, it is done by below code
+        Pointer2 = Pointer2.sort_index().reset_index(drop=True)
+
+        #Now in the header row, all columns name except type 'Rank 1', 'Rank 2, and so on will become null and these will be replaced by '1', '-1', '2' and so on ....
+        # Columns names changed using for loop for following names and 
+        Pointer2.rename(columns = {x:'' for x in ['Octant ID','Time','U', 'V', 'W', 'U Avg', 'V Avg', 'W Avg','U\'=U - U avg','V\'=V - V avg','W\'=W - W avg', 'Octant', '1','-1','2','-2','3','-3','4','-4','Rank1 Octant ID', 'Rank1 Octant Name' ]}, inplace = True)
+        #changing others according to specification 
+        Pointer2.rename(columns = {'Rank 1':'1', 'Rank 2':'-1', 'Rank 3':'2', 'Rank 4':'-2', 'Rank 5':'3', 'Rank 6':'-3', 'Rank 7':'4', 'Rank 8':'-4'}, inplace = True)
+    except IndexError:
+        print('Index Error in Part 14')
+    except:
+        print('Other Error in Part 14')
+    """
+    My current look of output file:::::::
+    <empty cells>	|   |     |     |       |       |       |	1 |	-1 |	2| 	-2| 3|  .... so on
+    Time | U |	V |	W	| U Avg |	V Avg |	W Avg |	U'=U - U avg| ...... so on........
+      0  |32.8| 5.97|	3.08|	27.30653354 |	0.048330476 |	0.107577744	 | 5.493466465 | ..... so on
+    we are done
+    """
+
+    #15 Saving all changes to output file
     Pointer2.to_excel("octant_output_ranking_excel.xlsx", sheet_name='octant_output_Ranking' ,index = False)
     
     
