@@ -273,7 +273,44 @@ def attendance_report():
     #Freeing up the memory, just a good practice
     del f3,f2,f4,attendance_actual_list, attendance_actual_set, attendance_fake_list, attendance_fake_set, total_lectures, total_lectures_taken
 
+    #5
+    #creating dataFrame for Duplicate Attendance Report
+    f5 = pandas.DataFrame()
+    f5.insert(len(f5.columns), 'Timestamp', '')
+    f5.insert(len(f5.columns), 'Roll', '')
+    f5.insert(len(f5.columns), 'Name', '')
+    f5.insert(len(f5.columns), 'Total count of attendance on that day', '')
+    index_f5 = 0
+
+    try:
+        #For all registered Students
+        for i in roll_to_name.keys():
+            #Traversing the dictionary which contain date as key on which they marked their attendance and  List of TimeFrames as value 
+            for j in attendance_count_everyday[i].keys():
+                #If size of specific list is more than 1 means duplicate attendance is marked on that day
+                if(len(attendance_count_everyday[i][j])>1):
+                    #For each Duplicate TimeFrame
+                    for k in attendance_count_everyday[i][j]:
+                        #Inserting value in dataframe using again creating a blank row first and then 
+                        #Same as did for above files
+                        s = pandas.Series([None,None,None,None],index=['Timestamp','Roll','Name','Total count of attendance on that day'])
+                        f5 = f5.append(s, ignore_index = True)
+                        f5['Timestamp'][index_f5] = k
+                        f5['Roll'][index_f5] = i
+                        f5['Name'][index_f5] = roll_to_name[i]
+                        f5['Total count of attendance on that day'][index_f5] = len(attendance_count_everyday[i][j])
+                        index_f5 += 1
+    except KeyError:
+        print("KeyError in Part 4")
+    except: 
+        print("Other Error in Part 4")
     
+    #Saving 'attendance_report_duplicate.csv'; index = False to prevent adding index as a series in csv file
+    f5.to_csv(os.path.join('output','attendance_report_duplicate.csv'), index=False)
+
+    #Freeing up remaining memory
+    del attendance_count_everyday, f5, roll_to_name
+
     
     
 
