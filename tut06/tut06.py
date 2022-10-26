@@ -96,7 +96,101 @@ def attendance_report():
         except:
             print("Some other Error in Part 2")
 
+    #3 Working
+    for counter, rows in f1.iterrows():
+        #This column contain null values, so to handle them
+        if(f1['Attendance'][counter]!=""):
+            #extracting roll number through slicing
+            roll_number = str(f1['Attendance'][counter])[0:8]
 
+            #Taking Timestamp in a variable
+            Timestamp = f1['Timestamp'][counter]
+            _time, _date = "",""
+
+            try:
+                #Using Regrex Expression, finding Time from the experssion using finditer()
+                #it is use to find all patterns similar in the main string
+                boom = re.finditer(time_pattern, Timestamp)
+                #here boom will store beginning and ending index of all pattern occuring in the string
+                for i in boom:
+                    #This loop will run only ones as there is only one pattern which fits the Regrex
+                    #obtaing time through slicing of indices
+                    _time = (f'{Timestamp[i.start():i.end()]}')
+            except IndexError:
+                print("Index Error in Part 3")
+            except:
+                print("Some other error in Part 3")
+            
+            #Using Regrex Expression, finding Date from the experssion using finditer()
+            #it is use to find all patterns similar in the main string
+            boom = re.finditer(date_pattern, Timestamp)
+            #here boom will store beginning and ending index of all pattern occuring in the string
+            for i in boom:
+                #This loop will run only ones as there is only one pattern which fits the Regrex
+                #obtaing time through slicing of indices
+                _date = (f'{Timestamp[i.start():i.end()]}')
+            
+            #Checking if the roll number is of a registered student
+            if(roll_number in roll_to_name.keys()):
+                
+                #Since KeyError was occuring, i adopted this method to add dictionary of lists
+                #if the date is not present as key in dictionary, initiallise it with Timestamp
+                if(_date not in attendance_count_everyday[roll_number].keys()):
+                    attendance_count_everyday[roll_number].setdefault(_date, [Timestamp])
+                else :
+                    #just append it in 
+                    attendance_count_everyday[roll_number][_date].append(Timestamp)
+                pass
+
+                #Pandas.Timestamp() is used pass string to pandas, so that it convert it into a Timestamp
+                #Weekday() return day of the week on provided Timestamp
+                #'0' for Monday and '3' for Thrusday                
+                if(pandas.Timestamp(_date[6:]+"-"+_date[3:5]+"-"+_date[0:2]).weekday() in [0,3]):
+                    #Adding this date to valid lecture occured
+                    total_lectures.add(_date)
+
+                    #Adding to valid lecture count for this roll number
+                    total_lectures_taken[roll_number].add(_date)
+
+                    #Extracting hour, minute, second through slicing
+                    _Hour, _minute, _second = int(_time[0:2]), int(_time[3:5]), int(_time[6:])
+
+                    #Checking if this attendance is actual or fake by comparing time
+                    #Actual is in between 14:00:00 to 15:00:00
+                    if( (_Hour==14 and (_minute>=0 and _minute<=59) and (_second>=0 and _second<=59))  or (_Hour == 15 and _minute==0 and _second==0 )):
+                        attendance_actual_set[roll_number].add(_date)
+
+                        #Since KeyError was occuring, i adopted this method to add dictionary of lists
+                        #if the date is not present as key in dictionary, initiallise it with Timestamp
+                        if(_date not in attendance_actual_list[roll_number].keys()):
+                            attendance_actual_list[roll_number].setdefault(_date, [Timestamp])
+                        else :
+                            #just append it in
+                            attendance_actual_list[roll_number][_date].append(Timestamp)                    
+                    else :
+                        #Attendance is fake
+                        attendance_fake_set[roll_number].add(_date)
+
+                        #Since KeyError was occuring, i adopted this method to add dictionary of lists
+                        #if the date is not present as key in dictionary, initiallise it with Timestamp
+                        if(_date not in attendance_fake_list[roll_number].keys()):
+                            attendance_fake_list[roll_number].setdefault(_date, [Timestamp])
+                        else :
+                             #just append it in
+                            attendance_fake_list[roll_number][_date].append(Timestamp)
+                else :
+                    attendance_fake_set[roll_number].add(_date)
+                    if(_date not in attendance_fake_list[roll_number].keys()):
+                        attendance_fake_list[roll_number].setdefault(_date, [Timestamp])
+                    else :
+                        attendance_fake_list[roll_number][_date].append(Timestamp)
+
+    #Deleting the default empty key we inputted during initialisation
+    for i in roll_to_name.keys():
+        del attendance_actual_list[i][" "]
+        del attendance_fake_list[i][" "]
+        del attendance_count_everyday[i][" "]
+    
 
     
     
