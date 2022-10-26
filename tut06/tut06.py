@@ -191,7 +191,89 @@ def attendance_report():
         del attendance_fake_list[i][" "]
         del attendance_count_everyday[i][" "]
     
+    #4 Inserting data to individual reports for each roll number and consolidated report for all roll numbers in a single file
+    #Creating data frame for consolidated report
+    f3 = pandas.DataFrame()
 
+    #Inserting columns in dataframe
+    # <file Pointer>.insert(index, '<column_label>')
+    f3.insert(len(f3.columns), 'Roll', '')
+    f3.insert(len(f3.columns), 'Name', '')
+    f3.insert(len(f3.columns), 'total_lecture_taken', '')
+    f3.insert(len(f3.columns), 'attendance_count_actual', '')
+    f3.insert(len(f3.columns), 'attendance_count_fake', '')
+    f3.insert(len(f3.columns), 'attendance_count_absent', '')
+    f3.insert(len(f3.columns), 'Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal ', '')
+    #variable to keep track of index of row
+    index_f3 = 0
+
+    for i in roll_to_name.keys():
+        #new dataframe for individual reports
+        f4 = pandas.DataFrame()
+
+        #Inserting columns
+        f4.insert(len(f4.columns), 'Roll', '')
+        f4.insert(len(f4.columns), 'Name', '')
+        f4.insert(len(f4.columns), 'total_lecture_taken', '')
+        f4.insert(len(f4.columns), 'attendance_count_actual', '')
+        f4.insert(len(f4.columns), 'attendance_count_fake', '')
+        f4.insert(len(f4.columns), 'attendance_count_absent', '')
+        f4.insert(len(f4.columns), 'Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal ', '')
+
+        #Before writing data, we need to create a blank row otherwise python will raise IndexError
+        # pandas.Series() will create a new series 
+        # it takes two parameters
+        # i) a list of values, all are blank so None
+        # ii) index = [Column list to align with columns]
+        s = pandas.Series([None,None,None,None,None,None,None],index=['Roll','Name','total_lecture_taken','attendance_count_actual','attendance_count_fake','attendance_count_absent','Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal '])
+        # appending to dataFrame
+        f4 = f4.append(s,ignore_index=True)
+        
+        #Writing data
+        f4['Roll'][0] = i
+        f4['Name'][0]= roll_to_name[i]
+
+        #These Columns values will be count of valid timestamps or date in form of string according to their respective conditions
+        #Putting count through len() of python
+        f4['total_lecture_taken'][0] = len(total_lectures_taken[i])
+        f4['attendance_count_actual'][0] = len(attendance_actual_set[i])
+        f4['attendance_count_fake'][0] = len(attendance_fake_set[i])
+        f4['attendance_count_absent'][0] = len(total_lectures) - len(total_lectures_taken[i])
+
+        #For some roll numbers, total count is zero means they had not taken any lecture
+        #so upon division, ZeroDivisionError is raised, just putting zero in percentage instead
+        try:
+            f4['Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal '][0] = round(100.00 * len(attendance_actual_set[i]) / len(total_lectures_taken[i]),2)
+        except ZeroDivisionError:
+            f4['Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal '][0] = 0
+        
+        #now for consolidated report
+        #Add series
+        f3 = f3.append(s, ignore_index = True)
+        #writing all the values for current roll number in the inserted blank row
+        f3['Roll'][index_f3] = f4['Roll'][0]
+        f3['Name'][index_f3] = f4['Name'][0]
+        f3['total_lecture_taken'][index_f3] = f4['total_lecture_taken'][0]
+        f3['attendance_count_actual'][index_f3] = f4['attendance_count_actual'][0]
+        f3['attendance_count_fake'][index_f3] = f4['attendance_count_fake'][0]
+        f3['attendance_count_absent'][index_f3] = f4['attendance_count_absent'][0]
+        f3['Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal '][index_f3] = f4['Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal '][0]
+        index_f3 += 1
+        
+        #Saving individual attendance report
+        #Since we are saving this file in a subfolder,
+        #Method to save in specific folder: os.path.join method, for joining one or more path components.
+        #Also since name of file is roll number, so using fstring to genereate name of file
+        f4.to_csv(os.path.join('output',f'{i}.csv'), index=False)
+
+    #saving consolidated report
+    #Method to save in specific folder: os.path.join method, for joining one or more path components.
+    f3.to_csv(os.path.join('output','attendance_report_consolidated.csv'), index= False)
+
+    #Freeing up the memory, just a good practice
+    del f3,f2,f4,attendance_actual_list, attendance_actual_set, attendance_fake_list, attendance_fake_set, total_lectures, total_lectures_taken
+
+    
     
     
 
