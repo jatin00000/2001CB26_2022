@@ -73,6 +73,30 @@ def attendance_report():
     date_pattern = re.compile(r'[\d]{2}\/[\d]{2}\/[\d]{4}')
 
 
+    #2 Initialisation of various data structures
+    #iterrows is a function which iterrates all the rows
+    #counter or variable at 1st place holds index (0 based indexing)
+    #row holds entire row of csv file in form of string
+    for counter, rows in f2.iterrows():
+        #we can access any row of a particular column by
+        #<file_pointer>['<column_label>'][counter] = <value>
+
+        #inserting name in dictionary
+        roll_to_name[f2['Roll No'][counter]]=f2['Name'][counter]
+        total_lectures_taken[f2['Roll No'][counter]] = myset.copy()
+        try:
+            #initiallising with default dictionary so that python understand the type of data structure
+            attendance_actual_list[f2['Roll No'][counter]] = {" ":[]}
+            attendance_actual_set[f2['Roll No'][counter]] = myset.copy()
+            attendance_fake_list[f2['Roll No'][counter]] = {" ":[]}
+            attendance_fake_set[f2['Roll No'][counter]] = myset.copy()
+            attendance_count_everyday[f2['Roll No'][counter]] = {" ": []}
+        except KeyError:
+            print("KeyError in Part 2")
+        except:
+            print("Some other Error in Part 2")
+
+
 
     
     
