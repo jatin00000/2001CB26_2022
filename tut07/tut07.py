@@ -337,6 +337,72 @@ def octant_analysis(mod=5000):
 		Pointer2['-4'][1]=_hash['-4']
 		_border = Myadd(_border, 2, '-4' )
 
+		try:
+			#6 Generating the values that will be bound of intervals like 0,5000,10000 for mod = 5000 and storing them in list
+			Bounds_mod_range=[]
+			for count in range(0, row__, mod): #start with zero till number of rows and increment by mod
+				Bounds_mod_range.append(count)
+			Bounds_mod_range.append(row__+1)
+
+			#Again making a dictionary, that will have for each octant all the intervals in form of list
+			#Example {'1':[[0,4999,0], [5000,9999,0], .....], '-1':[[0,4999,0], [5000,9999,0], .....], ..........}
+			#		'octant_value' : [[start_counter, end_counter, count of value]]
+			Count_range_wise = {'1':[], '-1':[], '2':[], '-2':[], '3':[], '-3':[], '4':[], '-4':[]}
+			for counter in range(len(Bounds_mod_range)-1):
+				for count in Count_range_wise:
+					Count_range_wise[count].append([Bounds_mod_range[counter],Bounds_mod_range[counter+1]-1,0])
+		except TypeError:
+			print('TypeError in Part 6')
+		except ValueError:
+			print('Value Error in Part 6')
+		except:
+			print('Other error in Part 6')
+
+		try:
+			#7 For each mod range of each octant, count number of octant in it
+			for counter, rows in Pointer2.iterrows():
+				# print(counter)
+				for idx in Count_range_wise[str(Pointer2['Octant'][counter])]:
+						if counter>=idx[0] and counter<=idx[1]:
+							#if lies in this interval, increment the count
+							idx[2]+=1
+							#we don't need to look furthur
+							break
+		except KeyError:
+			print('Key Error in Part 7')
+		except:
+			print('Other Error in Part 7')
+
+		#8 Adding mod range labels in output file
+		for count in range(len(Bounds_mod_range)-1):
+			#counter+2 as they will start to fill from 2nd row in Octant ID column
+			#will insert the range as an string
+			if(Count_range_wise['1'][count][1] != row__):
+				Pointer2['Octant ID'][count+2]=str(Count_range_wise['1'][count][0])+'-'+str(Count_range_wise['1'][count][1])
+				#Here border is inserted in next cell below because we are going to insert a row at 1st position which will shift all cells below by one
+				_border = Myadd(_border, count+3,'Octant ID' )
+			else :
+				Pointer2['Octant ID'][count+2]=str(Count_range_wise['1'][count][0])+'-Last Index'
+				_border = Myadd(_border, count+3,'Octant ID' )
+
+		#9 Filling count of each octant in each mod range into csv file
+		for key, value in Count_range_wise.items(): #iterating through dictionary
+			for counter in range(len(Bounds_mod_range)-1): #number of ranges of mod will be constant
+				Pointer2[str(key)][counter+2]=int(Count_range_wise[key][counter][2])
+				#<file_handler>['<column_for_octant>'][row number] = string of Count_range_wise[key is octant][serial number of mod range][count of values]
+				_border = Myadd(_border, counter+3,str(key) )
+		Pointer2.rename(columns = {'Dummy':''}, inplace = True)
+
+
+
+		#10 This dictionary Count_list contain number of times rank 1st occur for each octant
+		Count_list ={'1':0, '-1':0, '2':0, '-2':0, '3':0, '-3':0, '4':0, '-4':0}
+
+		#Calling the function Printer() to print Rank for overall count and passing it dictionary _hash, 
+		#1st Row will have Rank for overall count so index = 1
+		#Also receving the modified lists from function
+		_border, _color = Printer(_hash, Pointer2, 1, Count_list, _border, _color)
+
 
 
 ##Read all the excel files in a batch format from the input/ folder. Only xlsx to be allowed
