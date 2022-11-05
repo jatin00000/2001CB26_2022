@@ -677,7 +677,145 @@ def octant_analysis(mod=5000):
 		Pointer2.insert(44, 'd2', '')
 		Pointer2.insert(45, 'd3', '')
 		Pointer2.insert(46, 'd4', '')
+		#21 Putting the Length and count of longest Subsequence for each octant in xlsx file
+		#Position of cells will remain fixed, it doesn't depend on any other parameter
+		Pointer2['d2'][1]='Octant ##'
+		_border = Myadd(_border, 1,'d2' )
+		Pointer2['d2'][2] = '+1'
+		_border = Myadd(_border, 2,'d2' )
+		Pointer2['d2'][3] = '-1'
+		_border = Myadd(_border,3 ,'d2' )
+		Pointer2['d2'][4] = '+2'
+		_border = Myadd(_border, 4,'d2' )
+		Pointer2['d2'][5] = '-2'
+		_border = Myadd(_border,5 ,'d2' )
+		Pointer2['d2'][6] = '+3'
+		_border = Myadd(_border, 6,'d2' )
+		Pointer2['d2'][7] = '-3'
+		_border = Myadd(_border, 7,'d2' )
+		Pointer2['d2'][8] = '+4'
+		_border = Myadd(_border, 8,'d2' )
+		Pointer2['d2'][9] = '-4'
+		_border = Myadd(_border, 9,'d2' )
 
+		#Putting Length of Longest Subsequences
+		Pointer2['d3'][1]='Longest Subsquence Length'
+		_border = Myadd(_border, 1,'d3' )
+		Pointer2['d3'][2] = Dict_longes_Sub_seq['1'][0]
+		_border = Myadd(_border, 2,'d3' )
+		Pointer2['d3'][3] = Dict_longes_Sub_seq['-1'][0]
+		_border = Myadd(_border, 3, 'd3')
+		Pointer2['d3'][4] = Dict_longes_Sub_seq['2'][0]
+		_border = Myadd(_border, 4,'d3' )
+		Pointer2['d3'][5] = Dict_longes_Sub_seq['-2'][0]
+		_border = Myadd(_border, 5, 'd3')
+		Pointer2['d3'][6] = Dict_longes_Sub_seq['3'][0]
+		_border = Myadd(_border, 6, 'd3')
+		Pointer2['d3'][7] = Dict_longes_Sub_seq['-3'][0]
+		_border = Myadd(_border, 7, 'd3')
+		Pointer2['d3'][8] = Dict_longes_Sub_seq['4'][0]
+		_border = Myadd(_border, 8,'d3' )
+		Pointer2['d3'][9] = Dict_longes_Sub_seq['-4'][0]
+		_border = Myadd(_border, 9,'d3' )
+
+		#Putting Count of Longest Subsequence
+		Pointer2['d4'][1] = 'Count'
+		_border = Myadd(_border,1 , 'd4')
+		Pointer2['d4'][2] = Dict_longes_Sub_seq['1'][1]
+		_border = Myadd(_border, 2,'d4' )
+		Pointer2['d4'][3] = Dict_longes_Sub_seq['-1'][1]
+		_border = Myadd(_border, 3,'d4' )
+		Pointer2['d4'][4] = Dict_longes_Sub_seq['2'][1]
+		_border = Myadd(_border, 4, 'd4')
+		Pointer2['d4'][5] = Dict_longes_Sub_seq['-2'][1]
+		_border = Myadd(_border,5 ,'d4' )
+		Pointer2['d4'][6] = Dict_longes_Sub_seq['3'][1]
+		_border = Myadd(_border, 6, 'd4')
+		Pointer2['d4'][7] = Dict_longes_Sub_seq['-3'][1]
+		_border = Myadd(_border,7 , 'd4')
+		Pointer2['d4'][8] = Dict_longes_Sub_seq['4'][1]
+		_border = Myadd(_border,8 , 'd4')
+		Pointer2['d4'][9] = Dict_longes_Sub_seq['-4'][1]
+		_border = Myadd(_border,9 ,'d4' )
+		Pointer2.insert(47, 'e1', '')
+		Pointer2.insert(48, 'e2', '')
+		Pointer2.insert(49, 'e3', '')
+		Pointer2.insert(50, 'e4', '')
+		Pointer2['e2'][1] = 'Octant ###'
+		_border = Myadd(_border, 1, 'e2')
+		Pointer2['e3'][1] = 'Longest Subsquence Length'
+		_border = Myadd(_border, 1, 'e3')
+		Pointer2['e4'][1] = 'Count'
+		_border = Myadd(_border, 1, 'e4')
+
+		#22Using for loop, Printing various time interval in xlsx file
+		index = 2
+		#For each octant
+		for i in Dict_longes_Sub_seq:
+			#just to put octant with signs using this dictionary
+			Num_with_sign = {'1':'+1', '-1':'-1','2':'+2','-2':'-2','3':'+3', '-3':'-3','4':'+4','-4':'-4'}
+
+			#First Length and count of Longest Subsequence for each octant
+			Pointer2['e2'][index] = Num_with_sign[i]
+			_border = Myadd(_border,index ,'e2' )
+			Pointer2['e3'][index] = Dict_longes_Sub_seq[i][0]
+			_border = Myadd(_border,index ,'e3' )
+			Pointer2['e4'][index] = Dict_longes_Sub_seq[i][1]
+			_border = Myadd(_border, index, 'e4')
+
+			#Increment the number of row
+			#Printing 'Time', 'From' and 'To' in next subsequent cells
+			index += 1
+			Pointer2['e2'][index] = 'Time'
+			_border = Myadd(_border, index, 'e2')
+			Pointer2['e3'][index] = 'From'
+			_border = Myadd(_border, index, 'e3')
+			Pointer2['e4'][index] = 'To'
+			_border = Myadd(_border, index, 'e4')
+
+			#printing the time interval for each octant
+			index += 1
+			for j in range(len(Dict_longes_Sub_seq[i][2])):
+				Pointer2['e3'][index+j] = Dict_longes_Sub_seq[i][2][j][0]
+				_border = Myadd(_border,index+j, 'e3' )
+				_border = Myadd(_border,index+j, 'e2' )
+				Pointer2['e4'][index+j] = Dict_longes_Sub_seq[i][2][j][1]
+				_border = Myadd(_border, index+j,'e4')
+			# Increment the variable index to leave the rows equal to number of time interval
+			index += len(Dict_longes_Sub_seq[i][2])
+				#Rounding the column value upto 9 decimal values
+		Pointer2['U Avg'][1]=round(avg_U,3)
+		Pointer2['V Avg'][1]=round(avg_V,3)
+		Pointer2['W Avg'][1]=round(avg_W,3)
+		Pointer2.rename(columns = {x: '' for x in ['c1','c2','1c','-1c','2c','-2c','3c','-3c','4c','-4c','d1','d3','d4','e1','e3','e4']}, inplace = True)
+		Pointer2.rename(columns = {'c3':'Overall Transition Count', 'd2':'Longest Subsquence Length','e2':'Longest Subsquence Length with Range','Octant ID':'Overall Octant Count'}, inplace=True)
+		Pointer2.rename(columns = {x:'' for x in ['Dummy1', '1','-1','2','-2','3','-3','4','-4','Rank Octant 1','Rank Octant -1','Rank Octant 2','Rank Octant -2','Rank Octant 3','Rank Octant -3','Rank Octant 4','Rank Octant -4','Rank1 Octant ID', 'Rank1 Octant Name' ]}, inplace = True)
+		Pointer2.rename(columns = {x:'' for x in ['T','U', 'V', 'W', 'U Avg', 'V Avg', 'W Avg','U\'=U - U avg','V\'=V - V avg','W\'=W - W avg','Octant']}, inplace = True)
+		#23 Saving all changes to output file
+		Pointer2.to_excel(os.path.join('output',f'{a.split(".xlsx")[0]}_octant_analysis_mod_{mod}.xlsx'), sheet_name='sheet1' ,index = False)
+		
+		
+		#24 Opening in openpyxl module to do formating
+		# Method to save in specific folder: os.path.join method, for joining one or more path components.
+		# a = 1.0.xlsx
+		# to get only "1.0" split by ".xlsx" and take first part which is the name
+		wb = openpyxl.load_workbook(os.path.join('output',f'{a.split(".xlsx")[0]}_octant_analysis_mod_{mod}.xlsx'))
+		#Selecting the active workbook
+		ws  = wb.active
+		# cell() is used to access any cell in excel sheet by its row and column number
+		#Applying border
+		for i in range(len(_border)):
+			#<worksheet>.cell(row, column).border = <Border style definded by user>
+			ws.cell(row = _border[i][0], column = _border[i][1]).border = Myborder
+
+		#25Applying highlighting
+		for i in range(len(_color)):
+			#fill() is used to define how the cell will be formatted
+			#use to change a cell's background color.
+			#Start_color and end_color are different for applying gradient but
+			#we need solid fill, so both will be same
+			ws.cell(row = _color[i][0], column = _color[i][1]).fill = PatternFill(start_color="FFFF00",end_color="FFFF00", fill_type = "solid")
+		wb.save(os.path.join('output',f'{a.split(".xlsx")[0]}_octant_analysis_mod_{mod}.xlsx'))
 
 ##Read all the excel files in a batch format from the input/ folder. Only xlsx to be allowed
 ##Save all the excel files in a the output/ folder. Only xlsx to be allowed
