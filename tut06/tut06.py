@@ -20,6 +20,103 @@ pandas.options.mode.chained_assignment = None
 import warnings
 warnings.simplefilter(action='ignore', category= (FutureWarning, UserWarning))
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+import csv
+from random import randint
+from time import sleep
+
+
+
+def send_mail(fromaddr, frompasswd, toaddr, msg_subject, msg_body, file_path):
+    try:
+        msg = MIMEMultipart()
+        print("[+] Message Object Created")
+    except:
+        print("[-] Error in Creating Message Object")
+        return
+
+    msg['From'] = fromaddr
+
+    msg['To'] = toaddr
+
+    msg['Subject'] = msg_subject
+
+    body = msg_body
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    filename = file_path
+    attachment = open(filename, "rb")
+
+    p = MIMEBase('application', 'octet-stream')
+
+    p.set_payload((attachment).read())
+
+    encoders.encode_base64(p)
+
+    p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+    try:
+        msg.attach(p)
+        print("[+] File Attached")
+    except:
+        print("[-] Error in Attaching file")
+        return
+
+    try:
+        #s = smtplib.SMTP('smtp.gmail.com', 587)
+        s = smtplib.SMTP('mail.iitp.ac.in', 587)
+        print("[+] SMTP Session Created")
+    except:
+        print("[-] Error in creating SMTP session")
+        return
+
+    s.starttls()
+
+    try:
+        s.login(fromaddr, frompasswd)
+        print("[+] Login Successful")
+    except:
+        print("[-] Login Failed")
+
+    text = msg.as_string()
+
+    try:
+        s.sendmail(fromaddr, toaddr, text)
+        print("[+] Mail Sent successfully")
+    except:
+        print('[-] Mail not sent')
+
+    s.quit()
+
+
+def isEmail(x):
+    if ('@' in x) and ('.' in x):
+        return True
+    else:
+        return False
+
+FROM_ADDR = "changeme"
+FROM_PASSWD = "changeme"
+receiver = "mayank265@iitp.ac.in"
+Subject = "Sending Attendance Report"
+Body ='''
+Respected Sir,
+
+Please find attached consolidated attendance report of students of CS384 python course with this mail.   
+
+Thanking You.
+
+--
+Yours Sincerely
+2001CB26
+'''
+
 from datetime import datetime
 start_time = datetime.now()
 
@@ -317,6 +414,19 @@ else:
 
 
 attendance_report()
+#what a ever is the limit of your sending mails, like gmail has 500.
+max_count = 9999999
+count=0
+file_path = "output\attendance_report_consolidated.xlsx"
+try:
+        if isEmail(receiver):
+            send_mail(FROM_ADDR, FROM_PASSWD, receiver, Subject, Body, file_path)
+        print("Count Value: ", count)
+        print("Sleeping . .. . ")
+        sleep(randint(1,3))
+except:
+        print("Lets see ")
+
 
 
 
