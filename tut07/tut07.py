@@ -521,6 +521,162 @@ def octant_analysis(mod=5000):
 			val = Bounds_mod_range[i]
 			Transition_range_comb[val] = Transition_comb.copy()
 
+		#16 For each counter, we will count transition
+		try: 
+			for counter, rows in Pointer2.iterrows():
+				if counter==(row__-1): 
+					continue #skip last counter as there is no row below it to make a transition
+				else :
+					val = mod * int(counter/mod) 
+					#it is formula to find lower bound of a range to which a counter belongs
+					# for 11555, counter/mod = 11555/5000 = 2.311
+					# int(2.311) = 2
+					# mod *2 = 5000*2 = 10,000 
+					i = Pointer2['Octant'][counter]
+					j = Pointer2['Octant'][counter+1]
+					#using fstring, make suitable key
+					Transition_range_comb[val][f'{i}{j}'] += 1
+					#increasing Transition_comb[key] to keep transition count for overall
+					Transition_comb[f'{i}{j}'] +=1
+		except ValueError():
+			print("ValueError in Part 12")
+		except:
+			print("Error in Part 12")
+		
+		#17Counting longest Subsequence for each octant
+		Dict_longes_Sub_seq = { '1':[0,0,[]],'-1':[0,0,[]],'2':[0,0,[]],'-2':[0,0,[]],'3':[0,0,[]],'-3':[0,0,[]],'4':[0,0,[]],'-4':[0,0,[]]}
+		# here key = Octant Value and Value  = a list which 0th index is length of longest subsequence for this octant and 
+		# number of times this longest sequence has occured at 1st index and list of time interval in form of another list [start time, end time]
+
+		index = 0
+		# number of times this longest sequence has occured at 1st index
+		#It should always be two less than number of rows, one due to header and other as indexing starts from zero
+		#starting from first index
+		index = 0
+		#It should always be two less than number of rows, one due to header and other as indexing starts from zero
+		while index<(row__-1):
+				#Storing the octant for which, we will find the current longest subsequence
+			cur = str(Pointer2['Octant'][index])
+				#starts with length zero initially
+			length = 0
+			start_time = Pointer2['T'][index] #storing the starting time of beginning of sequence
+				#keep running this while loop until we find character same as our cur octant
+			while str(Pointer2['Octant'][index]) == cur and index<(row__-1):
+				length += 1 #Increase current subsequence length
+				index += 1 #Move to next index
+				
+				#If our current subsequence length is greater than previous Greatest Subsequence for current octant
+			if length > Dict_longes_Sub_seq[cur][0]:
+					Dict_longes_Sub_seq[cur][0] = length #Make current subsequence length as Greatest Subsequence for current octant
+					Dict_longes_Sub_seq[cur][1] = 1 #It has occured first time, so count is 1
+					Dict_longes_Sub_seq[cur][2].clear() #Empty the list of list as it is new beginning
+					Dict_longes_Sub_seq[cur][2].append([start_time,Pointer2['T'][index-1]]) #Appending the list interval
+			
+				#Else If our current subsequence length is equal to previous Greatest Subsequence for current octant
+			elif length == Dict_longes_Sub_seq[cur][0]:
+					#Just Increment the count for this length of Subsequence
+					Dict_longes_Sub_seq[cur][1] += 1
+					#Appending the current time interval in the list of lists of time
+					Dict_longes_Sub_seq[cur][2].append([start_time,Pointer2['T'][index-1]])
+
+
+		Pointer2 = pandas.concat([pandas.DataFrame([['T','U','V','W','U Avg','V Avg','W Avg','U\'=U - U avg','V\'=V - V avg','W\'=W - W avg','Octant',None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None]],columns=Pointer2.columns),Pointer2],ignore_index=True)
+		#18 Since we have created a new dataframe, so the index of excel needs to be reseted, it is done by below code
+		Pointer2 = Pointer2.sort_index().reset_index(drop=True)
+			#Now in the header row, all columns name except type 'Rank 1', 'Rank 2, and so on will become null and these will be replaced by '1', '-1', '2' and so on ....
+			# Columns names changed using for loop for following names and 
+			#changing others according to specification 
+
+		Pointer2.insert(32, 'c1', '')
+		Pointer2.insert(33, 'c2', '')
+		Pointer2.insert(34, 'c3', '')
+		Pointer2.insert(35, '1c', '')
+		Pointer2.insert(36, '-1c', '')
+		Pointer2.insert(37, '2c', '')
+		Pointer2.insert(38, '-2c', '')
+		Pointer2.insert(39, '3c', '')
+		Pointer2.insert(40, '-3c', '')
+		Pointer2.insert(41, '4c', '')
+		Pointer2.insert(42, '-4c', '')
+		counter = -1
+		#Writing overall transition count table using Value_put function
+		Pointer2['1c'][counter+1]='To'
+		Pointer2['c2'][counter+3]='From'
+		Pointer2['c3'][counter+2]='Octant #'
+		_border = Myadd(_border,counter+2,'c3' )
+		Pointer2['c3'][counter+3]='+1'
+		_border = Myadd(_border,counter+3,'c3' )
+		Pointer2['c3'][counter+4]='-1'
+		_border = Myadd(_border,counter+4,'c3' )
+		Pointer2['c3'][counter+5]='+2'
+		_border = Myadd(_border,counter+5,'c3' )
+		Pointer2['c3'][counter+6]='-2'
+		_border = Myadd(_border,counter+6,'c3' )
+		Pointer2['c3'][counter+7]='+3'
+		_border = Myadd(_border,counter+7,'c3' )
+		Pointer2['c3'][counter+8]='-3'
+		_border = Myadd(_border,counter+8,'c3' )
+		Pointer2['c3'][counter+9]='+4'
+		_border = Myadd(_border,counter+9,'c3' )
+		Pointer2['c3'][counter+10]='-4'
+		_border = Myadd(_border,counter+10,'c3' )
+		Pointer2['1c'][counter+2]='+1'
+		_border = Myadd(_border,counter+2,'1c' )
+		Pointer2['-1c'][counter+2]='-1'
+		_border = Myadd(_border,counter+2,'-1c' )
+		Pointer2['2c'][counter+2]='+2'
+		_border = Myadd(_border,counter+2,'2c' )
+		Pointer2['-2c'][counter+2]='-2'
+		_border = Myadd(_border,counter+2,'-2c' )
+		Pointer2['3c'][counter+2]='+3'
+		_border = Myadd(_border,counter+2,'3c' )
+		Pointer2['-3c'][counter+2]='-3'
+		_border = Myadd(_border,counter+2,'-3c' )
+		Pointer2['4c'][counter+2]='+4'
+		_border = Myadd(_border,counter+2,'4c' )
+		Pointer2['-4c'][counter+2]='-4'
+		_border = Myadd(_border,counter+2,'-4c' )
+
+		#Space_according_to_Octant is a dictionary which contain position for particular transition value column as they need to come in a particular order
+		Space_according_to_Octant ={'1':3, '-1':4,'2':5,'-2':6,'3':7,'-3':8,'4':9, '-4':10} #{octant: position along horizontal direction}
+		#19 Feeding main values in the matrix
+		for i in ['1','-1','2','-2','3','-3','4','-4']:
+			_max = list()
+			for j in ['1','-1','2','-2','3','-3','4','-4']:
+				_max.append(Transition_comb[f'{j}{i}'])
+			_Great = max(_max)
+			for j in ['1','-1','2','-2','3','-3','4','-4']:
+				Pointer2[i+'c'][counter+Space_according_to_Octant[j]]=Transition_comb[f'{j}{i}']
+				_border = Myadd(_border,counter+Space_according_to_Octant[j] , i+'c')
+				if(Transition_comb[f'{j}{i}'] == _Great):
+					_color = Myadd(_color,counter+Space_according_to_Octant[j] , i+'c')
+
+		#Leaving space of rows, 
+		#counter = 1 row for 'To' + 1 row for 'From' + 8 rows for 8 octants + 2 row for blank space + 1 for beginning of next matrix
+		counter+=14
+
+		try: 
+			#20 Using For loop, putting each matrix in excel file
+			for i in range(len(Bounds_mod_range)-1): #For each range
+				val = Bounds_mod_range[i]
+				#Calling Function Value_put()
+				if((Bounds_mod_range[i+1]-1)!=row__):
+					_border, _color = Value_put(Pointer2, f'{Bounds_mod_range[i]}-{Bounds_mod_range[i+1]-1}', counter, Transition_range_comb[val], 'Mod Transition Count', _border, _color)
+				else:
+					_border, _color = Value_put(Pointer2, f'{Bounds_mod_range[i]}-Last Index', counter, Transition_range_comb[val], 'Mod Transition Count', _border, _color)
+				counter+=13 #Jumping to next desired location
+		except TypeError():
+			print("TypeError in Part 14")
+		except ValueError():
+			print("ValueError in Part 14")
+		except:
+			print("Error in Part 14")
+
+		
+		Pointer2.insert(43, 'd1', '')
+		Pointer2.insert(44, 'd2', '')
+		Pointer2.insert(45, 'd3', '')
+		Pointer2.insert(46, 'd4', '')
 
 
 ##Read all the excel files in a batch format from the input/ folder. Only xlsx to be allowed
