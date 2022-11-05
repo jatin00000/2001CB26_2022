@@ -403,6 +403,124 @@ def octant_analysis(mod=5000):
 		#Also receving the modified lists from function
 		_border, _color = Printer(_hash, Pointer2, 1, Count_list, _border, _color)
 
+		#11 Since we don't want to include count of Rank 1 of overall count, we redefine it
+		Count_list ={'1':0, '-1':0, '2':0, '-2':0, '3':0, '-3':0, '4':0, '-4':0}
+
+		#mod ranges will start from 2nd row
+		#This index variable is used to print rank list for each mod range
+		index = 2
+
+		try:
+			#12 For each mod range
+			for i in range(len(Bounds_mod_range)-1):
+				#Calling the Printer() Function
+				# Octant ID		  +1	-1		 +2
+				# Overall Count	 2610	4603	4855
+				# Mod 5000			
+				# 0-4999		  414	 688	815		<<<<===== Row number 2
+				# 5000-9999		  380	 757	820
+				# 10000-14999	  621	1016	599
+				# 15000-19999	  366	682		948
+
+				#Since Function needs a dictionary in octant:count form 
+				#Directly accessing the cells for each octant for each mod range and passing them as dictionary through pre-defining as number of octant are 8 only
+				#Since ranks will be printed in same row, passing (index + i) 
+				#As for 2nd mod range, we will do all the operations in (index+1)th row
+				_border, _color = Printer({'1':Pointer2['1'][index+i],
+				'-1':Pointer2['-1'][index+i],
+				'2':Pointer2['2'][index+i],
+				'-2':Pointer2['-2'][index+i],
+				'3':Pointer2['3'][index+i],
+				'-3':Pointer2['-3'][index+i],
+				'4':Pointer2['4'][index+i],
+				'-4':Pointer2['-4'][index+i],
+				}, Pointer2, index+i, Count_list, _border, _color)
+		except ValueError:
+			print('Value Error in Part 12')
+		except :
+			print('Other Error in Part 12')
+
+		#Moving to three row below to the row having count of last mod range, Three row space has been left according to specification
+		index +=  len(Bounds_mod_range)
+
+		#13 There position will remain unaffected by other things so directly putting values in cells
+		Pointer2['Rank Octant 4'][index] = 'Octant ID'
+		_border = Myadd(_border,index +1,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+1] = '1'
+		_border = Myadd(_border, index+2,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+2] = '-1'
+		_border = Myadd(_border,index+3 ,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+3] = '2'
+		_border = Myadd(_border, index+4,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+4] = '-2'
+		_border = Myadd(_border,index+5 ,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+5] = '3'
+		_border = Myadd(_border,index+6 ,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+6] = '-3'
+		_border = Myadd(_border, index+7,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+7] = '4'
+		_border = Myadd(_border, index+8,'Rank Octant 4')
+		Pointer2['Rank Octant 4'][index+8] = '-4'
+		_border = Myadd(_border, index+9,'Rank Octant 4')
+		Pointer2['Rank Octant -4'][index] = 'Octant Name'
+		_border = Myadd(_border,index +1,'Rank Octant -4')
+
+		#Putting the mapping of octants
+		Pointer2['Rank Octant -4'][index+1] = octant_name_id_mapping[ '1']
+		_border = Myadd(_border,index+2 ,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+2] = octant_name_id_mapping[ '-1']
+		_border = Myadd(_border,index+3 ,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+3] = octant_name_id_mapping[ '2']
+		_border = Myadd(_border, index+4,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+4] = octant_name_id_mapping[ '-2']
+		_border = Myadd(_border,index+5 ,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+5] = octant_name_id_mapping[ '3']
+		_border = Myadd(_border,index+6 ,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+6] = octant_name_id_mapping[ '-3']
+		_border = Myadd(_border, index+7,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+7] = octant_name_id_mapping[ '4']
+		_border = Myadd(_border,index+8 ,'Rank Octant -4')
+		Pointer2['Rank Octant -4'][index+8] = octant_name_id_mapping[ '-4']
+		_border = Myadd(_border,index+9,'Rank Octant -4')
+
+		#Putting the number of times Rank 1st has occured for each octant
+		Pointer2['Rank1 Octant ID'][index] = 'Count of Rank 1 Mod Values'
+		_border = Myadd(_border,index+1,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+1] = Count_list[ '1']
+		_border = Myadd(_border,index+2 ,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+2] = Count_list[ '-1']
+		_border = Myadd(_border,index+3 ,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+3] = Count_list[ '2']
+		_border = Myadd(_border, index+4,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+4] = Count_list[ '-2']
+		_border = Myadd(_border,index+5 ,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+5] = Count_list[ '3']
+		_border = Myadd(_border, index+6,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+6] = Count_list[ '-3']
+		_border = Myadd(_border,index+7 ,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+7] = Count_list[ '4']
+		_border = Myadd(_border, index+8,'Rank1 Octant ID')
+		Pointer2['Rank1 Octant ID'][index+8] = Count_list[ '-4']
+		_border = Myadd(_border, index+9,'Rank1 Octant ID')
+
+		#14 Storing each transition as combination using fstring like 11 for +1 to +1 and 2-1 for +2 to -1 in a dictionary
+		Transition_comb =dict()
+		try :
+			for i in ['1','-1','2','-2','3','-3','4','-4']:
+				for j in ['1','-1','2','-2','3','-3','4','-4']:
+					Transition_comb[f'{i}{j}']=0 #here key is fstring and value is count of that key
+		except ValueError():
+			print("ValueError in Part 10")
+		except :
+			print("Other error in part 10")
+
+		#15 making another dictionary such that for each transition range
+		# starting bound is the key and value is the above dictionary which is Transition_comb for each range
+		Transition_range_comb = dict()
+		for i in range(len(Bounds_mod_range)-1):
+			val = Bounds_mod_range[i]
+			Transition_range_comb[val] = Transition_comb.copy()
+
 
 
 ##Read all the excel files in a batch format from the input/ folder. Only xlsx to be allowed
