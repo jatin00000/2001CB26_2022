@@ -79,7 +79,31 @@ def scorecard():
 			score[bowler][0] += 1
 			score[batsman][1] += run
 
-	
+	#Writing the data to txt file
+	f.write("Pakistan Innings....\n")
+	f.write("-"*59 + "\n")
+
+	#Inserting name in left alignment with width 20
+	#Inserting bowls in middle alignment with width 15
+	#Inserting runs in right alignment with width 20
+	f.write(f"|{'Name of Player' : <20}|{'Bowls Thrown' : ^15}|{'Runs' : >20}|\n")
+	f.write("-"*59 +"\n")
+	for i in TeamPak:
+		f.write(f"|{name[i] : <20}|{score[i][0] : ^15}|{score[i][1] : >20}|\n")
+	f.write("-"*59 +"\n")
+	f.write("\n")
+	f.write("India Innings....\n")
+	f.write("-"*59 +"\n")
+	f.write(f"|{'Name of Player' : <20}|{'Bowls Thrown' : ^15}|{'Runs' : >20}|\n")
+	f.write('-'*59 +"\n")
+	for i in TeamIndia:
+		f.write(f"|{name[i] : <20}|{score[i][0] : ^15}|{score[i][1] : >20}|\n")
+	f.write('-'*59 +"\n")
+	f.write("\n")
+	f.write("End @\n")
+	f.write("Mandatory 0.1-6 38\n")
+	#saving the file
+	f.close()
 
 ###Code
 
