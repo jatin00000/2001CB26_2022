@@ -1,0 +1,36 @@
+Pakistan Innings....
+-----------------------------------------------------------
+|Name of Player      | Bowls Thrown  |                Runs|
+-----------------------------------------------------------
+|Babar Azam(c)       |       0       |                  10|
+|Mohammad Rizwan(w)  |       0       |                  43|
+|Fakhar Zaman        |       0       |                  10|
+|Iftikhar Ahmed      |       0       |                  28|
+|Khushdil Shah       |       0       |                   2|
+|Asif Ali            |       0       |                   9|
+|Shadab Khan         |      24       |                  10|
+|Mohammad Nawaz      |      22       |                   1|
+|Naseem Shah         |      26       |                   0|
+|Haris Rauf          |      26       |                  13|
+|Shahnawaz Dahani    |      26       |                  16|
+-----------------------------------------------------------
+
+India Innings....
+-----------------------------------------------------------
+|Name of Player      | Bowls Thrown  |                Runs|
+-----------------------------------------------------------
+|Rohit Sharma(c)     |       0       |                  12|
+|KL Rahul            |       0       |                   0|
+|Virat Kohli         |       0       |                  35|
+| Suryakumar Yadav   |       0       |                  18|
+|Dinesh Karthik(w)   |       0       |                   1|
+|Hardik Pandya       |      26       |                  33|
+|Ravindra Jadeja     |      12       |                  40|
+|Bhuvneshwar Kumar   |      24       |                   0|
+|Avesh Khan          |      12       |                   0|
+|Yuzvendra Chahal    |      24       |                   0|
+|Arshdeep Singh      |      25       |                   0|
+-----------------------------------------------------------
+
+End @
+Mandatory 0.1-6 38
