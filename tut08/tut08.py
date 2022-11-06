@@ -15,6 +15,17 @@ def scorecard():
 	f1 = open('pak_inns1.txt', 'r')
 	f2 = open('india_inns2.txt', 'r')
 
+	#Reading all the lines
+	Pak = f1.readlines()
+	Ind = f2.readlines()
+
+	#Storing the number of balls thrown and run scored by each player in a dictionary 
+	#key as player short name and value as list
+	#Initializing
+	score = dict()
+	for i in name:
+		score[i] = [0,0]
+	
 	
 
 ###Code
