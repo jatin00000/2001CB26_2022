@@ -60,7 +60,27 @@ def scorecard():
 			score[bowler][0] += 1
 			score[batsman][1] += run	
 
+	#Same above thing for India's inning
+	for i in Ind:
+		if(len(i.split(","))>1):
+			s1 = i.split(",")[0]
+			searchObj = re.search( r'(?:\d*\.\d+|\d+)(?: & b)? (.+?)(?: to |$)', s1, re.M|re.I)
+			bowler = searchObj.group(1)
+			searchObj = re.search( r'to(?: & b)? (.+)', s1, re.M|re.I)
+			batsman = searchObj.group(1)
+			run = 0
+			s2 = i.split(",")[1].strip()
+			if(len(s2.split(" "))>1 and  s2.split(" ")[0].isnumeric()):
+				run = int(s2.split(" ")[0])
+			elif(s2.split(" ")[0] == 'FOUR'):
+				run = 4
+			elif(s2.split(" ")[0] == 'SIX'):
+				run = 6
+			score[bowler][0] += 1
+			score[batsman][1] += run
+
 	
+
 ###Code
 
 from platform import python_version
