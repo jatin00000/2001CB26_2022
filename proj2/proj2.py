@@ -35,11 +35,6 @@ else:
 	print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
 
-		
-		
-		
-		
-
 def proj_octant_gui():
 	#Printing title on screen
 	st.title("Project 2")
@@ -110,7 +105,56 @@ def proj_octant_gui():
 
 
 
-	
+	#Defining second Tab		
+	with t2:
+		#Text to be displayed
+		st.header("MultiFile")
+		st.text('1. Select the desired path.')
+		st.text('2. Enter mod value.')
+		st.text('3 Click on Compute Button.')
+		st.write('*Not following the above steps for interacting will led to errors.')
+
+		#using tkinter module here to take input a path of folder
+		# Set up tkinter
+
+		#Tk() helps to display the root window and manages all the other components of the tkinter application
+		root = tk.Tk()
+
+		# Tkinter withdraw method hides the window without destroying it internally.
+		root.withdraw()
+
+		dirname = 'a'
+		# Make folder picker dialog appear on top of other windows
+		root.wm_attributes('-topmost', 1)
+
+		# Folder picker button
+		st.write('Please select a folder:')
+		clicked = st.button('Select Folder')
+		if clicked:
+			#st.text_input is a input taker in simple text format of streamlit
+			#filedialog.askdirector() is provides a unique way to select file
+			#And is also select path
+			dirname = st.text_input('Selected folder:', filedialog.askdirectory(master=root), key="dirname")
+
+		#taking input for mod value
+		#st.number_input is use to take number input, 'format' is use to specify type of number like decimal, integer
+		mod = st.number_input("Enter mod value:", format="%d", key="mod")	
+
+		#Creating a compute button
+		reg = st.button('Compute',on_click = None)
+		#If button is clicked
+		if reg:
+						
+						#used to return all file paths that match a specific pattern. 
+						file_list = glob.glob(f'{st.session_state.dirname}/*.xlsx')
+						for myFile in file_list:
+							#Taking each file, one by one
+							octant_analysis_single_file(myFile, st.session_state.dirname,int(st.session_state.mod))
+						st.write("Your Files are processed.")
+
+		#Clearing the session state as it could get clear now			
+		for i in st.session_state.keys():
+			del i
 
 proj_octant_gui()
 
