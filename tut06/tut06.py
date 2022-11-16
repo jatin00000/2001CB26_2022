@@ -1,6 +1,10 @@
 #Import the necessary modules
-import pandas, re, os
-
+import pandas
+import openpyxl
+from datetime import timedelta, date
+from openpyxl import load_workbook
+from datetime import datetime
+ 
 #This line of Pandas->inputoutput->format->file_type = Excel-> ExcelFormatter is used to format excel way of looking
 #Header_Style determines the header row look and all the layout related to header
 #Setting it none make header row look likes normal data row only
@@ -121,283 +125,204 @@ from datetime import datetime
 start_time = datetime.now()
 
 def attendance_report():
-    #1 
-    # Opening the input files
-    f1 = pandas.read_csv('input_attendance.csv')
-    f2 = pandas.read_csv('input_registered_students.csv')
+    pointer1=pandas.read_csv("input_registered_students.csv")
+    #name and roll no of students are stored in it
+    rollno=[]
+    names=[]
+    # rollno=pointer1["Roll No"]
+    for index in pointer1.index:
+        roll=pointer1["Roll No"][index]
+        rollno.append(roll)
 
-    #Declaration of all the user-defined data structures, I will be using
-    roll_to_name, mydict = dict(), dict()
-    total_lectures,myset = set(),set()
-    total_lectures_taken = dict()
-    attendance_real, attendance_duplicate, attendance_invalid = dict(),dict(),dict()
-    ''' 
-    1. mydict is a simple dictionary which will be used in defining other structures, by making and suppling a copy of it
-    2. myset is a set similar to mydict
-    3. roll_to_name is a dictionary
-        having key : roll number and value : name of this roll number
-
-    4. total_lectures is a set containing valid dates on which lecture happened in form of string
-
-    5. attendance_real is a dictionary of set
-        key : Roll number
-        value : a set which contains dates stored in form of string for each roll number when a person has actual attendance
-        attendance_real = {'2001CB02':{'01-09-2022', '28-07-2022', .....}, '2001CB03':{'01-09-2022', '28-07-2022', .....}, .....}
-
-    
-    Now, attendance_duplicate, attendance_invalid, total_lectures_taken are dictionary of dictionary
-    key : roll number
-    value : another dictionary for which~
-        key : date in form of string
-        value : number of attendances
-    example: 
-    {'2001CB02': {'28-07-2022': 1, '01-08-2022': 1, .....},
-     '2001CB03': {'28-07-2022': 1, '01-08-2022': 2, .....},
-     .........}
-
-    7. attendance_real has dates on which attendance is counted actual
-    8. attendance_duplicate has dates on which attendance is counted as duplicate
-    9. attendance_invalid has dates on which attendance is marked outside 2 to 3 PM
-    '''
-
-    #Created Regrex Expression for extracting Roll Number, Time, Date in between various values
-    roll_number_pattern = re.compile(r'2001[A-Za-z]{2}[\d]{2}')
-    time_pattern = re.compile(r'[\d]{2}:[\d]{2}')
-    date_pattern = re.compile(r'[\d]{2}-[\d]{2}-[\d]{4}')
+    for index in pointer1.index:
+        nam=pointer1["Name"][index]
+        nam=rollno[index]+" "+nam
+        names.append(nam)
 
 
-    #2 Initialisation of various data structures
-    #iterrows is a function which iterrates all the rows
-    #counter or variable at 1st place holds index (0 based indexing)
-    #row holds entire row of csv file in form of string
-    for counter, rows in f2.iterrows():
-        #we can access any row of a particular column by
-        #<file_pointer>['<column_label>'][counter] = <value>
-
-        #inserting name in dictionary
-        roll_to_name[f2['Roll No'][counter]]=f2['Name'][counter]        
-        try:
-            #initiallising with default dictionary so that python understand the type of data structure
-            attendance_real[f2['Roll No'][counter]] = myset.copy()
-            total_lectures_taken[f2['Roll No'][counter]] = {" ":0}
-            attendance_duplicate[f2['Roll No'][counter]] = {" ":0}
-            attendance_invalid[f2['Roll No'][counter]] = {" ": 0}
-        except KeyError:
-            print("KeyError in Part 2")
-        except:
-            print("Some other Error in Part 2")
-    
-    #Deleting the default empty key we inputted during initialisation
-    for i in roll_to_name.keys():
-        del attendance_duplicate[i][" "]
-        del attendance_invalid[i][" "]
-        del total_lectures_taken[i][" "]
-
-    #3 Working
-    for counter, rows in f1.iterrows():
-        #This column contain null values, so to handle them
-        if(f1['Attendance'][counter]!=""):
-            #extracting roll number through slicing
-            roll_number = str(f1['Attendance'][counter])[0:8]
-
-            #Taking Timestamp in a variable
-            Timestamp = f1['Timestamp'][counter]
-            _time, _date = "",""
-
-            try:
-                #Using Regrex Expression, finding Time from the experssion using finditer()
-                #it is use to find all patterns similar in the main string
-                boom = re.finditer(time_pattern, Timestamp)
-                #here boom will store beginning and ending index of all pattern occuring in the string
-                for i in boom:
-                    #This loop will run only ones as there is only one pattern which fits the Regrex
-                    #obtaing time through slicing of indices
-                    _time = (f'{Timestamp[i.start():i.end()]}')
-            except IndexError:
-                print("Index Error in Part 3")
-            except:
-                print("Some other error in Part 3")
-            
-            #Using Regrex Expression, finding Date from the experssion using finditer()
-            #it is use to find all patterns similar in the main string
-            boom = re.finditer(date_pattern, Timestamp)
-            #here boom will store beginning and ending index of all pattern occuring in the string
-            for i in boom:
-                #This loop will run only ones as there is only one pattern which fits the Regrex
-                #obtaing time through slicing of indices
-                _date = (f'{Timestamp[i.start():i.end()]}')
-            
-            #Checking if the roll number is of a registered student
-            if(roll_number in roll_to_name.keys()):
-                
-                #Pandas.Timestamp() is used pass string to pandas, so that it convert it into a Timestamp
-                #Weekday() return day of the week on provided Timestamp
-                #'0' for Monday and '3' for Thrusday                
-                if(pandas.Timestamp(_date).weekday() in [0,3]):
-
-                    #Adding this date to valid lecture occured
-                    total_lectures.add(_date)
-
-                    #Adding to  lecture count for this roll number
-                    #Since KeyError was occuring, i adopted this method to add dictionary
-                    #if the date is not present as key in dictionary, initiallise it with 1 value
-                    if(_date not in attendance_duplicate[roll_number].keys()):
-                        total_lectures_taken[roll_number].setdefault(_date, 1)
-                    else :
-                        #just increase the value
-                        total_lectures_taken[roll_number][_date] += 1
-
-                    #Extracting hour, minute through slicing
-                    _Hour, _minute= int(_time[0:2]), int(_time[3:5])
-
-                    #Checking if this attendance is actual or fake by comparing time
-                    #Actual is in between 14:00:00 to 15:00:00
-                    if( (_Hour==14 and (_minute>=0 and _minute<=59))  or (_Hour == 15 and _minute==0)):
-
-                        #if attendance is real, just add it to the set of respective roll number
-                        if(_date not in attendance_real[roll_number]):
-                            attendance_real[roll_number].add(_date)
-                        #if attendance is marked as real once, means remaining will go to duplicate
-                        else:
-                            #Since KeyError was occuring, i adopted this method to add dictionary
-                            #if the date is not present as key in dictionary, initiallise it with 1 value
-                            if(_date not in attendance_duplicate[roll_number].keys()):
-                                attendance_duplicate[roll_number].setdefault(_date, 1)
-                            else :
-                                #just increase the count
-                                attendance_duplicate[roll_number][_date] += 1
-
-                    else :
-                        #Attendance is invalid
-                        #Since KeyError was occuring, i adopted this method to add dictionary
-                        #if the date is not present as key in dictionary, initiallise it with 1 value
-                        if(_date not in attendance_invalid[roll_number].keys()):
-                            attendance_invalid[roll_number].setdefault(_date, 1)
-                        else :
-                            #just increase the value
-                            attendance_invalid[roll_number][_date] += 1
-
-
-    
-    #4 Inserting data to individual reports for each roll number and consolidated report for all roll numbers in a single file
-    #Creating data frame for consolidated report
-    f3 = pandas.DataFrame()
-
-    #Inserting columns in dataframe
-    # <file Pointer>.insert(index, '<column_label>')
-    f3.insert(len(f3.columns), 'Roll', '')
-    f3.insert(len(f3.columns), 'Name', '')
-    #Inserting dynamic date columns through for loop
-    for i in total_lectures:
-        f3.insert(len(f3.columns), i, '')
-    f3.insert(len(f3.columns), 'Actual Lecture Taken', '')
-    f3.insert(len(f3.columns), 'Total Real', '')
-    f3.insert(len(f3.columns), '% Attendance', '')
-    #variable to keep track of index of row
-    index_f3 = 0
-
-    for i in roll_to_name.keys():
-        #new dataframe for individual reports
-        f4 = pandas.DataFrame()
-
-        #Inserting columns
-        f4.insert(len(f4.columns), 'Date', '')
-        f4.insert(len(f4.columns), 'Roll', '')
-        f4.insert(len(f4.columns), 'Name', '')
-        f4.insert(len(f4.columns), 'Total Attendance Count', '')
-        f4.insert(len(f4.columns), 'Real', '')
-        f4.insert(len(f4.columns), 'Duplicate', '')
-        f4.insert(len(f4.columns), 'Invalid', '')
-        f4.insert(len(f4.columns), 'Absent', '')
-        index_f4 = 0
-        for j in total_lectures:
-
-            #Before writing data, we need to create a blank row otherwise python will raise IndexError
-            # pandas.Series() will create a new series 
-            # it takes two parameters
-            # i) a list of values, all are blank so None
-            # ii) index = [Column list to align with columns]
-            s = pandas.Series([None,None,None,None,None,None,None,None],index=['Date','Roll','Name','Total Attendance Count','Real','Duplicate','Invalid','Absent'])
-            # appending to dataFrame
-            f4 = f4.append(s,ignore_index=True)
-            #Writing data
-            f4['Date'][index_f4] = j
-            f4['Roll'][index_f4] = i
-            f4['Name'][index_f4] = roll_to_name[i]
-            if(j in total_lectures_taken[i].keys()):
-                f4['Total Attendance Count'][index_f4] = total_lectures_taken[i][j]
-            else :
-                f4['Total Attendance Count'][index_f4] = 0
-            pass
-            #Absent is opposite to presence of real attendance 
-            if(j in attendance_real[i]):
-                f4['Real'][index_f4] = 1
-                f4['Absent'][index_f4] = 0
-
-            else :
-                f4['Real'][index_f4] = 0
-                f4['Absent'][index_f4] = 1
-            pass 
-            #Writing duplicate attendance
-            if(j in attendance_duplicate[i].keys()):
-                f4['Duplicate'][index_f4] = attendance_duplicate[i][j]
-            else :
-                f4['Duplicate'][index_f4] = 0
-            pass
-            #writing invalid attendance
-            if(j in attendance_invalid[i].keys()):
-                f4['Invalid'][index_f4] = attendance_invalid[i][j]
-            else :
-                f4['Invalid'][index_f4] = 0
-            pass
-            index_f4 += 1
-        
-
-
-            
-       
-        #now for consolidated report
-        dummy = [None for i in range(5 + len(total_lectures))]
-        s = pandas.Series(dummy, index = list(f3.columns)) 
-        #Add series
-        f3 = f3.append(s, ignore_index = True)
-        n_present = 0
-        #writing all the values for current roll number in the inserted blank row
-        f3['Roll'][index_f3] = i
-        f3['Name'][index_f3] = roll_to_name[i]
-        #Inserting for dynamic date columns through for loop
-        for j in total_lectures:
-            if(j in attendance_real[i]):
-                f3[j][index_f3] = 'P'
-                n_present += 1
-            else:
-                f3[j][index_f3] = 'A'
-        f3['Actual Lecture Taken'][index_f3] = len(total_lectures)
-        f3['Total Real'][index_f3] = n_present
-        f3['% Attendance'][index_f3] = round(100.00 * n_present / len(total_lectures),2)
-        index_f3 += 1
-        
-        #Saving individual attendance report
-        #Since we are saving this file in a subfolder,
-        #Method to save in specific folder: os.path.join method, for joining one or more path components.
-        #Also since name of file is roll number, so using fstring to genereate name of file
-        try:
-            f4.to_excel(os.path.join('output',f'{i}.xlsx'), sheet_name=i, index=False)
-        except FileExistsError:
-            print('File Already exist')
-        except: 
-            print('error in saving individual report')
-    
-    #saving consolidated report
-    #Method to save in specific folder: os.path.join method, for joining one or more path components.
+    # names stored the roll no. and name
     try:
-        f3.to_excel(os.path.join('output','attendance_report_consolidated.xlsx'), sheet_name="Consolidated Report", index= False)
-    except FileExistsError:
-        print('File Already Exists')
+        
+        attendance=pandas.read_csv("input_attendance.csv")
     except:
-        print('error in saving consolidated report')
-    # #Freeing up the memory, just a good practice
-    del myset, mydict, attendance_real, attendance_duplicate, attendance_invalid, total_lectures, total_lectures_taken
+        
+        print("input_attendence file not found")
+        
+
+
+    #finding total no_of rows and columns
+    no_of_rows=len(attendance)
+    no_of_col=len(attendance.columns)
+
+    ##############################################
+    #taking start time
+    start=attendance["Timestamp"][0]
+    end=attendance["Timestamp"][no_of_rows-1]
+
+
+
+
+    start_time_stamp=pandas.Timestamp(start)
+    startday=start_time_stamp.time()
+    # start=start[0:10]
+    # end=end[0:10]
+    # it will stare date from start to end
+    dateranges=pandas.date_range(start,end,freq='d')
+
+    date_to_append_in=[]
+
+    for i in range(len(dateranges)):
+        date_mon_th=pandas.Timestamp(dateranges[i])
+        
+
+        proper_date=date_mon_th.date()
+        proper_date= proper_date.strftime("%d-%m-%Y")
+
+        date_day=date_mon_th.day_name()
+
+        
+        if(date_day=="Monday" or date_day=="Thursday"):
+            date_to_append_in.append(proper_date)
+    # print(date_to_append_in)
+    # exit()        
+    ##########################################################
+    #opening work book named sheet 2
+        
+    lb=openpyxl.Workbook()
+    pointer2=lb.active 
+    pointer2.cell(row=1,column=1).value="Roll"
+    pointer2.cell(row=1,column=2).value="Name"
+    for  dd in range(len(date_to_append_in)):
+        pointer2.cell(row=1,column=dd+3).value=date_to_append_in[dd]
+
+    total_dates=len(date_to_append_in)
+    pointer2.cell(row=1,column=total_dates+3).value="Actual Lecture Taken"
+    pointer2.cell(row=1,column=total_dates+4).value="Total Real"
+    pointer2.cell(row=1,column=total_dates+5).value=" %Attendance "
+
+    #names basic information in sheet
+    
+    for i in range(len(names)): 
+        
+        fi=names[i]
+        Filename_roll=fi[0:8]
+        candidate_name=fi[8:]
+
+        wb=openpyxl.Workbook()
+        sheet=wb.active
+        ##########################
+        pointer2.cell(row=i+2,column=1).value=Filename_roll
+        pointer2.cell(row=i+2,column=2).value=candidate_name
+        
+        
+        
+        ################
+        date_dict={}
+        for ii in range(len(date_to_append_in)):
+            date_dict[date_to_append_in[ii]]=[0,0,0] 
+            
+            
+        # print(date_dict) 
+        ###############################################
+    #   basic fillings in the sheet 
+        sheet.cell(row=1,column=1).value="Date"
+        sheet.cell(row=1,column=2).value="Roll"
+        sheet.cell(row=1,column=3).value="Name"
+        sheet.cell(row=1,column=4).value="Total Attendance Count"
+        sheet.cell(row=1,column=5).value="Real"
+        sheet.cell(row=1,column=6).value="Dublicate"
+        sheet.cell(row=1,column=7).value="Invalid"
+        sheet.cell(row=1,column=8).value="Absent"
+        
+        sheet.cell(row=2,column=2).value=Filename_roll
+        sheet.cell(row=2,column=3).value=candidate_name 
+    ################################################# 
+        # datefillings
+        
+        for iii in range(len(date_to_append_in)):
+            sheet.cell(row=iii+3,column=1).value=date_to_append_in[iii]
+            
+
+
+        for index in attendance.index:
+
+            fullname=attendance["Attendance"][index]
+            capitalroll=fullname[0:8]
+            capitalname=fullname[8:]
+            fullname=capitalroll+(capitalname.upper())
+            #extracting name and roll num
+            
+            
+            if(fullname==names[i]):
+                # print(fullname)
+                # print(fullname )
+                # print(names[i])
+                # print(" ")
+                attendingtime=attendance["Timestamp"][index]
+                my_date = datetime.strptime(attendingtime, "%d-%m-%Y %H:%M")
+                day=my_date.weekday()
+                hou=my_date.hour
+                min=my_date.minute
+                date_of_day= my_date.strftime("%d-%m-%Y")
+                
+                if(day==0 or day==3):
+                    if( hou==14 or (hou==15 and min==0 )):
+                        if(date_dict[date_of_day][0]>0):
+                            date_dict[date_of_day][1]+=1
+                        else:
+                            date_dict[date_of_day][0]+=1
+                    else:
+                        date_dict[date_of_day][2]+=1
+
+        no_of_A=0
+        no_of_p=0
+        # print(date_dict)
+        # exit()
+        #storing present absent and dublicate in date dict
+        #  filling values in the sheet
+        for xx in range(len(date_dict)):
+            
+            sheet.cell(row=3+xx,column=4).value=date_dict[date_to_append_in[xx]][0]+date_dict[date_to_append_in[xx]][1] +date_dict[date_to_append_in[xx]][2]  
+            sheet.cell(row=3+xx,column=5).value=date_dict[date_to_append_in[xx]][0]        
+            sheet.cell(row=3+xx,column=6).value=date_dict[date_to_append_in[xx]][1]
+            sheet.cell(row=3+xx,column=7).value=date_dict[date_to_append_in[xx]][2]  
+            real= date_dict[date_to_append_in[xx]][0]
+            if(real):
+                pointer2.cell(row=i+2,column=xx+3).value="P"
+                no_of_p+=1
+            else:
+                pointer2.cell(row=i+2,column=xx+3).value="A"
+                no_of_A+=1
+                
+            
+            absent=1;
+            if real==1:
+                absent=0
+            
+            sheet.cell(row=3+xx,column=8).value=absent                
+
+        #############################################
+        pointer2.cell(row=i+2,column=total_dates+3).value=no_of_A+no_of_p
+        pointer2.cell(row=i+2,column=total_dates+4).value=no_of_p
+        
+        trun=no_of_p/(no_of_A+no_of_p)
+        
+        trun=round(trun,2)
+        pointer2.cell(row=i+2,column=total_dates+5).value=trun*100
+
+        
+
+        
+        ##########################################
+        date_dict.clear()
+        #clearing the dictonary so that it can be used for other studen
+        variablename=Filename_roll
+        finalname="attendance_report_consolidate"
+        lb.save(r"output/%s.xlsx"%finalname)
+        wb.save( r"output/%s.xlsx"%variablename)
+        
+        #saving the file  in output file
+                     
 
     
     
