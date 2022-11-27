@@ -675,6 +675,36 @@ st.text("Enter the value of following constants:")
 constant_fk2d=st.number_input("Constant fk2d:", key = "constant_fk2d")
 multiplying_factor_3d= st.number_input("Multiplying factor:", key = "multiplying_factor_3d")
 Shear_velocity=st.number_input("Shear velocity:", key = "Shear_velocity")
+st.text(" ")
+st.text("---------------------------------------------Menu---------------------------------------------")
+st.text('1. C \n2. S \n3. A \n4. C & S \n5. C & A \n6. S & A \n7. C & S & A \n8. all combine')
+
+tch = st.number_input('Chose Filtering Method From Above:', format="%d", key='tch')
+if st.session_state.tch == 1:
+    corr = st.number_input('Enter thresold value C:',format="%d", key="corr")
+elif st.session_state.tch == 2:
+    SNR = st.number_input('Enter thresold value S:',format="%d", key="SNR")
+elif st.session_state.tch == 3:
+    Lambda = st.number_input('Enter Lambda value for A:', key="Lambda")
+    k = st.number_input('Enter k value for A:', key="k")
+elif st.session_state.tch == 4:
+    corr = st.number_input('Enter thresold value C:',format="%d", key="corr")
+    SNR = st.number_input('Enter thresold value S:',format="%d", key="SNR")
+elif st.session_state.tch == 5:
+    corr = st.number_input('Enter thresold value C:',format="%d", key="corr")
+    Lambda = st.number_input('Enter Lambda value for A:', key="Lambda")
+    k = st.number_input('Enter k value for A:', key="k")
+elif st.session_state.tch == 6:
+    SNR = st.number_input('Enter thresold value S:',format="%d", key="SNR")
+    Lambda = st.number_input('Enter Lambda value for A:', key="Lambda")
+    k = st.number_input('Enter k value for A:', key="k")
+elif st.session_state.tch == 7 or st.session_state.tch==8:
+    corr = st.number_input('Enter thresold value C:',format="%d", key="corr")
+    SNR = st.number_input('Enter thresold value S:',format="%d", key="SNR")
+    Lambda = st.number_input('Enter Lambda value for A:', key="Lambda")
+    k = st.number_input('Enter k value for A:', key="k")
+else:
+    st.text('Please enter correct choice...')
 
 
     end_time = datetime.now()
