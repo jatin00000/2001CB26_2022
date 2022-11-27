@@ -671,11 +671,15 @@ div[data-testid="stMarkdownContainer"]{
 #Printing title on screen
 st.title("Project 3")
 st.header("Web Based Interface for PSAT")
+
+#Taking input for constants
 st.text("Enter the value of following constants:")
 constant_fk2d=st.number_input("Constant fk2d:", key = "constant_fk2d")
 multiplying_factor_3d= st.number_input("Multiplying factor:", key = "multiplying_factor_3d")
 Shear_velocity=st.number_input("Shear velocity:", key = "Shear_velocity")
 st.text(" ")
+
+#Displaying the menu for Filtering Method
 st.text("---------------------------------------------Menu---------------------------------------------")
 st.text('1. C \n2. S \n3. A \n4. C & S \n5. C & A \n6. S & A \n7. C & S & A \n8. all combine')
 
@@ -706,12 +710,13 @@ elif st.session_state.tch == 7 or st.session_state.tch==8:
 else:
     st.text('Please enter correct choice...')
 
+#Displaying the Replacement Method and taking the input for it
 st.text(" ")
 st.text("---------------------------------------------Menu---------------------------------------------")
 st.text('1. previous point \n2. 2*last-2nd_last \n3. overall_mean \n4. 12_point_strategy \n5. mean of previous 2 point \n6. all seqential \n7. all parallel')
 sch = st.number_input('Chose Replacement Method From Above:',format="%d", key="sch")
 reg = st.button('Compute',on_click = None)
-		#If button is clicked
+#If button is clicked
 if reg:
     try:
         fileList = open('input_file_list.txt', 'r')
@@ -743,6 +748,12 @@ if reg:
         file_.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(start_time.strftime("%c"),"average_velocity_U","average_velocity_V","average_velocity_W","U_variance_Prime","V_variance_Prime","W_variance_Prime","U_stdev_Prime","V_stdev_Prime","W_stdev_Prime","Skewness_U_Prime","Skewness_V_Prime","Skewness_W_Prime","Kurtosis_U_Prime","Kurtosis_V_Prime","Kurtosis_W_Prime","Reynolds_stress_u\'v\'","Reynolds_stress_u\'w\'","Reynolds_stress_v\'w\'","Anisotropy","M30","M03","M12","M21","fku_2d","Fku_2d","fkw_2d","Fkw_2d","fku_3d","Fku_3d","fkw_3d","Fkw_3d","TKE_3d","Q1_K_Value","Q2_K_Value","Q3_K_Value","Q4_K_Value","e","ED","Octant_plus_1","Octant_minus_1","Octant_plus_2","Octant_minus_2","Octant_plus_3","Octant_minus_3","Octant_plus_4","Octant_minus_4","Total_Octant_sample","Probability_Octant_plus_1","Probability_Octant_minus_1","Probability_Octant_plus_2","Probability_Octant_minus_2","Probability_Octant_plus_3","Probability_Octant_minus_3","Probability_Octant_plus_4","Probability_Octant_minus_4","Min_Octant_Count","Min_Octant_Count_id","Max_Octant_Count","Max_Octant_Count_id","\n"))
 
     try:
+        	#In streamlit, on clicking a button
+			#The script is refreshed and all the run time values like here of mod, file input are lost
+			#using st.session_state is a dictionary type use to store values in run time
+			#When the script is refreshed due to button click
+
+			#This session state dictionary data is not lost and we can use these values in program
         if st.session_state.sch> 7:
             st.text('Please enter correct choice...')
         else:
