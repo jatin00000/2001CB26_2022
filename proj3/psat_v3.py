@@ -706,6 +706,11 @@ elif st.session_state.tch == 7 or st.session_state.tch==8:
 else:
     st.text('Please enter correct choice...')
 
+st.text(" ")
+st.text("---------------------------------------------Menu---------------------------------------------")
+st.text('1. previous point \n2. 2*last-2nd_last \n3. overall_mean \n4. 12_point_strategy \n5. mean of previous 2 point \n6. all seqential \n7. all parallel')
+sch = st.number_input('Chose Replacement Method From Above:',format="%d", key="sch")
+
 
     end_time = datetime.now()
 
